@@ -403,6 +403,14 @@ export class TelegramAPI implements Telegram.Bot {
     return this._call('setMyDefaultAdministratorRights', params);
   }
 
+  setMyName(params: Telegram.Params.SetMyName): ITelegramResponse<true> {
+    return this._call('setMyName', params);
+  }
+
+  getMyName(params: Telegram.Params.GetMyName): ITelegramResponse<Telegram.BotName> {
+    return this._call('getMyName', params);
+  }
+
   setMyDescription(params: Telegram.Params.SetMyDescription): ITelegramResponse<true> {
     return this._call('setMyDescription', params);
   }

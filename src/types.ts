@@ -1,7 +1,7 @@
 /**
-Bot API 6.6
-March 9, 2023
-*/
+ Bot API 6.7
+ April 21, 2023
+ */
 
 export namespace Telegram {
 
@@ -425,6 +425,13 @@ export namespace Telegram {
   }>;
 
   /**
+   * This object represents a service message about a user allowing a bot to write messages after adding the bot to the attachment menu or launching a Web App from a link.
+   */
+  export type WriteAccessAllowed = Readonly<{
+    web_app_name?: string; /** Optional. Name of the Web App which was launched from a link */
+  }>;
+
+  /**
    * This object represents a service message about a video chat scheduled in the chat.
    */
   export type VideoChatScheduled = Readonly<{
@@ -551,6 +558,7 @@ export namespace Telegram {
     login_url?: LoginUrl; /** Optional. An HTTPS URL used to automatically authorize the user. Can be used as a replacement for the Telegram Login Widget. */
     switch_inline_query?: string; /** Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot's username and the specified inline query in the input field. May be empty, in which case just the bot's username will be inserted.Note: This offers an easy way for users to start using your bot in inline mode when they are currently in a private chat with it. Especially useful when combined with switch_pm… actions - in this case the user will be automatically returned to the chat they switched from, skipping the chat selection screen. */
     switch_inline_query_current_chat?: string; /** Optional. If set, pressing the button will insert the bot's username and the specified inline query in the current chat's input field. May be empty, in which case only the bot's username will be inserted.This offers a quick way for the user to open your bot in inline mode in the same chat - good for selecting something from multiple options. */
+    switch_inline_query_chosen_chat?: SwitchInlineQueryChosenChat; /** Optional. If set, pressing the button will prompt the user to select one of their chats of the specified type, open that chat and insert the bot's username and the specified inline query in the input field */
     callback_game?: CallbackGame; /** Optional. Description of the game that will be launched when the user presses the button.NOTE: This type of button must always be the first button in the first row. */
     pay?: boolean; /** Optional. Specify True, to send a Pay button.NOTE: This type of button must always be the first button in the first row and can only be used in invoice messages. */
   }>;
@@ -563,6 +571,17 @@ export namespace Telegram {
     forward_text?: string; /** Optional. New text of the button in forwarded messages. */
     bot_username?: string; /** Optional. Username of a bot, which will be used for user authorization. See Setting up a bot for more details. If not specified, the current bot's username will be assumed. The url's domain must be the same as the domain linked with the bot. See Linking your domain to the bot for more details. */
     request_write_access?: boolean; /** Optional. Pass True to request the permission for your bot to send messages to the user. */
+  }>;
+
+  /**
+   * This object represents an inline button that switches the current user to inline mode in a chosen chat, with an optional default inline query.
+   */
+  export type SwitchInlineQueryChosenChat = Readonly<{
+    query?: string; /** Optional. The default inline query to be inserted in the input field. If left empty, only the bot's username will be inserted */
+    allow_user_chats?: boolean; /** Optional. True, if private chats with users can be chosen */
+    allow_bot_chats?: boolean; /** Optional. True, if private chats with bots can be chosen */
+    allow_group_chats?: boolean; /** Optional. True, if group and supergroup chats can be chosen */
+    allow_channel_chats?: boolean; /** Optional. True, if channel chats can be chosen */
   }>;
 
   /**
@@ -721,6 +740,7 @@ export namespace Telegram {
     old_chat_member: ChatMember; /** Previous information about the chat member */
     new_chat_member: ChatMember; /** New information about the chat member */
     invite_link?: ChatInviteLink; /** Optional. Chat invite link, which was used by the user to join the chat; for joining by invite link events only. */
+    via_chat_folder_invite_link?: boolean; /** Optional. True, if the user joined the chat via a chat folder invite link */
   }>;
 
   /**
@@ -832,6 +852,13 @@ export namespace Telegram {
     type: string; /** Scope type, must be chat_member */
     chat_id: number | string; /** Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername) */
     user_id: number; /** Unique identifier of the target user */
+  }>;
+
+  /**
+   * This object represents the bot's name.
+   */
+  export type BotName = Readonly<{
+    name: string; /** The bot's name */
   }>;
 
   /**
@@ -961,8 +988,6 @@ export namespace Telegram {
 
   export type GeneralForumTopicUnhidden = unknown; /** Currently holds no information. */
 
-  export type WriteAccessAllowed = unknown; /** Currently holds no information. */
-
   export type VideoChatStarted = unknown; /** Currently holds no information. */
 
   export type ChatMember =
@@ -1075,6 +1100,15 @@ export namespace Telegram {
     offset: string; /** Offset of the results to be returned, can be controlled by the bot */
     chat_type?: string; /** Optional. Type of the chat from which the inline query was sent. Can be either “sender” for a private chat with the inline query sender, “private”, “group”, “supergroup”, or “channel”. The chat type should be always known for requests sent from official clients and most third-party clients, unless the request was sent from a secret chat */
     location?: Location; /** Optional. Sender location, only for bots that request user location */
+  }>;
+
+  /**
+   * This object represents a button to be shown above inline query results. You must use exactly one of the optional fields.
+   */
+  export type InlineQueryResultsButton = Readonly<{
+    text: string; /** Label text on the button */
+    web_app?: WebAppInfo; /** Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to switch back to the inline mode using the method web_app_switch_inline_query inside the Web App. */
+    start_parameter?: string; /** Optional. Deep-linking parameter for the /start message sent to the bot when a user presses the button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.Example: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search results accordingly. To do this, it displays a 'Connect your YouTube account' button above the results, or even before showing any. The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs the bot to return an OAuth link. Once done, the bot can offer a switch_inline button so that the user can easily return to the chat where they wanted to use the bot's inline capabilities. */
   }>;
 
   /**
@@ -1801,8 +1835,8 @@ export namespace Telegram {
 
 
   export type CallbackGame = Readonly<{}>;
-  
-   /** This object represents the contents of a file to be uploaded. Must be posted using multipart/form-data in the usual way that files are uploaded via the browser. */
+
+  /** This object represents the contents of a file to be uploaded. Must be posted using multipart/form-data in the usual way that files are uploaded via the browser. */
   export type InputFile = Readonly<{
     file: Buffer;
     name: string;
@@ -1811,7 +1845,7 @@ export namespace Telegram {
 
   export namespace Params {
     export type GetUpdates = Readonly<{
-      offset?: number; /** Identifier of the first update to be returned. Must be greater by one than the highest among the identifiers of previously received updates. By default, updates starting with the earliest unconfirmed update are returned. An update is considered confirmed as soon as getUpdates is called with an offset higher than its update_id. The negative offset can be specified to retrieve updates starting from -offset update from the end of the updates queue. All previous updates will forgotten. */
+      offset?: number; /** Identifier of the first update to be returned. Must be greater by one than the highest among the identifiers of previously received updates. By default, updates starting with the earliest unconfirmed update are returned. An update is considered confirmed as soon as getUpdates is called with an offset higher than its update_id. The negative offset can be specified to retrieve updates starting from -offset update from the end of the updates queue. All previous updates will be forgotten. */
       limit?: number; /** Limits the number of updates to be retrieved. Values between 1-100 are accepted. Defaults to 100. */
       timeout?: number; /** Timeout in seconds for long polling. Defaults to 0, i.e. usual short polling. Should be positive, short polling should be used for testing purposes only. */
       allowed_updates?: ReadonlyArray<string>; /** A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default). If not specified, the previous setting will be used.Please note that this parameter doesn't affect updates created before the call to the getUpdates, so unwanted updates may be received for a short period of time. */
@@ -2332,6 +2366,15 @@ export namespace Telegram {
       language_code?: string; /** A two-letter ISO 639-1 language code or an empty string */
     }>;
 
+    export type SetMyName = Readonly<{
+      name?: string; /** New bot name; 0-64 characters. Pass an empty string to remove the dedicated name for the given language. */
+      language_code?: string; /** A two-letter ISO 639-1 language code. If empty, the name will be shown to all users for whose language there is no dedicated name. */
+    }>;
+
+    export type GetMyName = Readonly<{
+      language_code?: string; /** A two-letter ISO 639-1 language code or an empty string */
+    }>;
+
     export type SetMyDescription = Readonly<{
       description?: string; /** New bot description; 0-512 characters. Pass an empty string to remove the dedicated description for the given language. */
       language_code?: string; /** A two-letter ISO 639-1 language code. If empty, the description will be applied to all users for whose language there is no dedicated description. */
@@ -2524,10 +2567,9 @@ export namespace Telegram {
       inline_query_id: string; /** Unique identifier for the answered query */
       results: ReadonlyArray<InlineQueryResult>; /** A JSON-serialized array of results for the inline query */
       cache_time?: number; /** The maximum amount of time in seconds that the result of the inline query may be cached on the server. Defaults to 300. */
-      is_personal?: boolean; /** Pass True if results may be cached on the server side only for the user that sent the query. By default, results may be returned to any user who sends the same query */
+      is_personal?: boolean; /** Pass True if results may be cached on the server side only for the user that sent the query. By default, results may be returned to any user who sends the same query. */
       next_offset?: string; /** Pass the offset that a client should send in the next query with the same text to receive more results. Pass an empty string if there are no more results or if you don't support pagination. Offset length can't exceed 64 bytes. */
-      switch_pm_text?: string; /** If passed, clients will display a button with specified text that switches the user to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter */
-      switch_pm_parameter?: string; /** Deep-linking parameter for the /start message sent to the bot when user presses the switch button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.Example: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search results accordingly. To do this, it displays a 'Connect your YouTube account' button above the results, or even before showing any. The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs the bot to return an OAuth link. Once done, the bot can offer a switch_inline button so that the user can easily return to the chat where they wanted to use the bot's inline capabilities. */
+      button?: InlineQueryResultsButton; /** A JSON-serialized object describing a button to be shown above inline query results */
     }>;
 
     export type AnswerWebAppQuery = Readonly<{
@@ -2637,7 +2679,7 @@ export namespace Telegram {
 
 
   }
-    
+
   export interface Bot {
     /**
      * Use this method to get current webhook status. Requires no parameters. On success, returns a WebhookInfo object. If the bot is using getUpdates, will return an object with the url field empty.
@@ -2987,6 +3029,16 @@ export namespace Telegram {
      * Use this method to get the current list of the bot's commands for the given scope and user language. Returns an Array of BotCommand objects. If commands aren't set, an empty list is returned.
      */
     getMyCommands(params: Telegram.Params.GetMyCommands): ITelegramResponse;
+
+    /**
+     * Use this method to change the bot's name. Returns True on success.
+     */
+    setMyName(params: Telegram.Params.SetMyName): ITelegramResponse<true>;
+
+    /**
+     * Use this method to get the current bot name for the given user language. Returns BotName on success.
+     */
+    getMyName(params: Telegram.Params.GetMyName): ITelegramResponse;
 
     /**
      * Use this method to change the bot's description, which is shown in the chat with the bot if the chat is empty. Returns True on success.
