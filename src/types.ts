@@ -1,6 +1,6 @@
 /**
- Bot API 6.7
- April 21, 2023
+ Bot API 6.8
+ August 18, 2023
  */
 
 export namespace Telegram {
@@ -79,6 +79,7 @@ export namespace Telegram {
     photo?: ChatPhoto; /** Optional. Chat photo. Returned only in getChat. */
     active_usernames?: ReadonlyArray<string>; /** Optional. If non-empty, the list of all active chat usernames; for private chats, supergroups and channels. Returned only in getChat. */
     emoji_status_custom_emoji_id?: string; /** Optional. Custom emoji identifier of emoji status of the other party in a private chat. Returned only in getChat. */
+    emoji_status_expiration_date?: number; /** Optional. Expiration date of the emoji status of the other party in a private chat in Unix time, if any. Returned only in getChat. */
     bio?: string; /** Optional. Bio of the other party in a private chat. Returned only in getChat. */
     has_private_forwards?: true; /** Optional. True, if privacy settings of the other party in the private chat allows to use tg://user?id=<user_id> links only in chats with the user. Returned only in getChat. */
     has_restricted_voice_and_video_messages?: true; /** Optional. True, if the privacy settings of the other party restrict sending voice and video note messages in the private chat. Returned only in getChat. */
@@ -130,6 +131,7 @@ export namespace Telegram {
     document?: Document; /** Optional. Message is a general file, information about the file */
     photo?: ReadonlyArray<PhotoSize>; /** Optional. Message is a photo, available sizes of the photo */
     sticker?: Sticker; /** Optional. Message is a sticker, information about the sticker */
+    story?: Story; /** Optional. Message is a forwarded story */
     video?: Video; /** Optional. Message is a video, information about the video */
     video_note?: VideoNote; /** Optional. Message is a video note, information about the video message */
     voice?: Voice; /** Optional. Message is a voice message, information about the file */
@@ -319,8 +321,9 @@ export namespace Telegram {
    */
   export type PollAnswer = Readonly<{
     poll_id: string; /** Unique poll identifier */
-    user: User; /** The user, who changed the answer to the poll */
-    option_ids: ReadonlyArray<number>; /** 0-based identifiers of answer options, chosen by the user. May be empty if the user retracted their vote. */
+    voter_chat?: Chat; /** Optional. The chat that changed the answer to the poll, if the voter is anonymous */
+    user?: User; /** Optional. The user that changed the answer to the poll, if the voter isn't anonymous */
+    option_ids: ReadonlyArray<number>; /** 0-based identifiers of chosen answer options. May be empty if the vote was retracted. */
   }>;
 
   /**
@@ -556,7 +559,7 @@ export namespace Telegram {
     callback_data?: string; /** Optional. Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes */
     web_app?: WebAppInfo; /** Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Available only in private chats between a user and the bot. */
     login_url?: LoginUrl; /** Optional. An HTTPS URL used to automatically authorize the user. Can be used as a replacement for the Telegram Login Widget. */
-    switch_inline_query?: string; /** Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot's username and the specified inline query in the input field. May be empty, in which case just the bot's username will be inserted.Note: This offers an easy way for users to start using your bot in inline mode when they are currently in a private chat with it. Especially useful when combined with switch_pm… actions - in this case the user will be automatically returned to the chat they switched from, skipping the chat selection screen. */
+    switch_inline_query?: string; /** Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot's username and the specified inline query in the input field. May be empty, in which case just the bot's username will be inserted. */
     switch_inline_query_current_chat?: string; /** Optional. If set, pressing the button will insert the bot's username and the specified inline query in the current chat's input field. May be empty, in which case only the bot's username will be inserted.This offers a quick way for the user to open your bot in inline mode in the same chat - good for selecting something from multiple options. */
     switch_inline_query_chosen_chat?: SwitchInlineQueryChosenChat; /** Optional. If set, pressing the button will prompt the user to select one of their chats of the specified type, open that chat and insert the bot's username and the specified inline query in the input field */
     callback_game?: CallbackGame; /** Optional. Description of the game that will be launched when the user presses the button.NOTE: This type of button must always be the first button in the first row. */
@@ -710,7 +713,7 @@ export namespace Telegram {
     can_invite_users: boolean; /** True, if the user is allowed to invite new users to the chat */
     can_pin_messages: boolean; /** True, if the user is allowed to pin messages */
     can_manage_topics: boolean; /** True, if the user is allowed to create forum topics */
-    until_date: number; /** Date when restrictions will be lifted for this user; unix time. If 0, then the user is restricted forever */
+    until_date: number; /** Date when restrictions will be lifted for this user; Unix time. If 0, then the user is restricted forever */
   }>;
 
   /**
@@ -727,7 +730,7 @@ export namespace Telegram {
   export type ChatMemberBanned = Readonly<{
     status: string; /** The member's status in the chat, always “kicked” */
     user: User; /** Information about the user */
-    until_date: number; /** Date when restrictions will be lifted for this user; unix time. If 0, then the user is banned forever */
+    until_date: number; /** Date when restrictions will be lifted for this user; Unix time. If 0, then the user is banned forever */
   }>;
 
   /**
@@ -980,6 +983,8 @@ export namespace Telegram {
   }>;
 
 
+  export type Story = unknown; /** Currently holds no information. */
+
   export type ForumTopicClosed = unknown; /** Currently holds no information. */
 
   export type ForumTopicReopened = unknown; /** Currently holds no information. */
@@ -1107,7 +1112,7 @@ export namespace Telegram {
    */
   export type InlineQueryResultsButton = Readonly<{
     text: string; /** Label text on the button */
-    web_app?: WebAppInfo; /** Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to switch back to the inline mode using the method web_app_switch_inline_query inside the Web App. */
+    web_app?: WebAppInfo; /** Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to switch back to the inline mode using the method switchInlineQuery inside the Web App. */
     start_parameter?: string; /** Optional. Deep-linking parameter for the /start message sent to the bot when a user presses the button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.Example: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search results accordingly. To do this, it displays a 'Connect your YouTube account' button above the results, or even before showing any. The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs the bot to return an OAuth link. Once done, the bot can offer a switch_inline button so that the user can easily return to the chat where they wanted to use the bot's inline capabilities. */
   }>;
 
@@ -2130,7 +2135,7 @@ export namespace Telegram {
     export type BanChatMember = Readonly<{
       chat_id: number | string; /** Unique identifier for the target group or username of the target supergroup or channel (in the format @channelusername) */
       user_id: number; /** Unique identifier of the target user */
-      until_date?: number; /** Date when the user will be unbanned, unix time. If user is banned for more than 366 days or less than 30 seconds from the current time they are considered to be banned forever. Applied for supergroups and channels only. */
+      until_date?: number; /** Date when the user will be unbanned; Unix time. If user is banned for more than 366 days or less than 30 seconds from the current time they are considered to be banned forever. Applied for supergroups and channels only. */
       revoke_messages?: boolean; /** Pass True to delete all messages from the chat for the user that is being removed. If False, the user will be able to see messages in the group that were sent before the user was removed. Always True for supergroups and channels. */
     }>;
 
@@ -2145,7 +2150,7 @@ export namespace Telegram {
       user_id: number; /** Unique identifier of the target user */
       permissions: ChatPermissions; /** A JSON-serialized object for new user permissions */
       use_independent_chat_permissions?: boolean; /** Pass True if chat permissions are set independently. Otherwise, the can_send_other_messages and can_add_web_page_previews permissions will imply the can_send_messages, can_send_audios, can_send_documents, can_send_photos, can_send_videos, can_send_video_notes, and can_send_voice_notes permissions; the can_send_polls permission will imply the can_send_messages permission. */
-      until_date?: number; /** Date when restrictions will be lifted for the user, unix time. If user is restricted for more than 366 days or less than 30 seconds from the current time, they are considered to be restricted forever */
+      until_date?: number; /** Date when restrictions will be lifted for the user; Unix time. If user is restricted for more than 366 days or less than 30 seconds from the current time, they are considered to be restricted forever */
     }>;
 
     export type PromoteChatMember = Readonly<{
@@ -2339,6 +2344,10 @@ export namespace Telegram {
     }>;
 
     export type UnhideGeneralForumTopic = Readonly<{
+      chat_id: number | string; /** Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername) */
+    }>;
+
+    export type UnpinAllGeneralForumTopicMessages = Readonly<{
       chat_id: number | string; /** Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername) */
     }>;
 
@@ -3009,6 +3018,11 @@ export namespace Telegram {
      * Use this method to unhide the 'General' topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the can_manage_topics administrator rights. Returns True on success.
      */
     unhideGeneralForumTopic(params: Telegram.Params.UnhideGeneralForumTopic): ITelegramResponse<true>;
+
+    /**
+     * Use this method to clear the list of pinned messages in a General forum topic. The bot must be an administrator in the chat for this to work and must have the can_pin_messages administrator right in the supergroup. Returns True on success.
+     */
+    unpinAllGeneralForumTopicMessages(params: Telegram.Params.UnpinAllGeneralForumTopicMessages): ITelegramResponse<true>;
 
     /**
      * Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to the user as a notification at the top of the chat screen or as an alert. On success, True is returned.

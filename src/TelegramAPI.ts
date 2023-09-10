@@ -477,6 +477,10 @@ export class TelegramAPI implements Telegram.Bot {
     return this._call('unhideGeneralForumTopic', params);
   }
 
+  unpinAllGeneralForumTopicMessages(params: Telegram.Params.UnpinAllGeneralForumTopicMessages): ITelegramResponse<true> {
+    return this._call('unpinAllGeneralForumTopicMessages', params);
+  }
+
   unpinAllChatMessages(params: Telegram.Params.UnpinAllChatMessages): ITelegramResponse<true> {
     return this._call('unpinAllChatMessages', params);
   }
