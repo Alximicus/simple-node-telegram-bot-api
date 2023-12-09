@@ -1,6 +1,6 @@
 /**
- Bot API 6.8
- August 18, 2023
+ Bot API 6.9
+ September 22, 2023
  */
 
 export namespace Telegram {
@@ -24,7 +24,7 @@ export namespace Telegram {
     poll?: Poll; /** Optional. New poll state. Bots receive only updates about stopped polls and polls, which are sent by the bot */
     poll_answer?: PollAnswer; /** Optional. A user changed their answer in a non-anonymous poll. Bots receive new votes only in polls that were sent by the bot itself. */
     my_chat_member?: ChatMemberUpdated; /** Optional. The bot's chat member status was updated in a chat. For private chats, this update is received only when the bot is blocked or unblocked by the user. */
-    chat_member?: ChatMemberUpdated; /** Optional. A chat member's status was updated in a chat. The bot must be an administrator in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates. */
+    chat_member?: ChatMemberUpdated; /** Optional. A chat member's status was updated in a chat. The bot must be an administrator in the chat and must explicitly specify "chat_member" in the list of allowed_updates to receive these updates. */
     chat_join_request?: ChatJoinRequest; /** Optional. A request to join the chat has been sent. The bot must have the can_invite_users administrator right in the chat to receive these updates. */
   }>;
 
@@ -161,7 +161,7 @@ export namespace Telegram {
     user_shared?: UserShared; /** Optional. Service message: a user was shared with the bot */
     chat_shared?: ChatShared; /** Optional. Service message: a chat was shared with the bot */
     connected_website?: string; /** Optional. The domain name of the website on which the user has logged in. More about Telegram Login » */
-    write_access_allowed?: WriteAccessAllowed; /** Optional. Service message: the user allowed the bot added to the attachment menu to write messages */
+    write_access_allowed?: WriteAccessAllowed; /** Optional. Service message: the user allowed the bot to write messages after adding it to the attachment or side menu, launching a Web App from a link, or accepting an explicit request from a Web App sent by the method requestWriteAccess */
     passport_data?: PassportData; /** Optional. Telegram Passport data */
     proximity_alert_triggered?: ProximityAlertTriggered; /** Optional. Service message. A user in the chat triggered another user's proximity alert while sharing Live Location. */
     forum_topic_created?: ForumTopicCreated; /** Optional. Service message: forum topic created */
@@ -428,10 +428,12 @@ export namespace Telegram {
   }>;
 
   /**
-   * This object represents a service message about a user allowing a bot to write messages after adding the bot to the attachment menu or launching a Web App from a link.
+   * This object represents a service message about a user allowing a bot to write messages after adding it to the attachment menu, launching a Web App from a link, or accepting an explicit request from a Web App sent by the method requestWriteAccess.
    */
   export type WriteAccessAllowed = Readonly<{
-    web_app_name?: string; /** Optional. Name of the Web App which was launched from a link */
+    from_request?: boolean; /** Optional. True, if the access was granted after the user accepted an explicit request from a Web App sent by the method requestWriteAccess */
+    web_app_name?: string; /** Optional. Name of the Web App, if the access was granted when the Web App was launched from a link */
+    from_attachment_menu?: boolean; /** Optional. True, if the access was granted when the bot was added to the attachment or side menu */
   }>;
 
   /**
@@ -639,16 +641,19 @@ export namespace Telegram {
    */
   export type ChatAdministratorRights = Readonly<{
     is_anonymous: boolean; /** True, if the user's presence in the chat is hidden */
-    can_manage_chat: boolean; /** True, if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege */
+    can_manage_chat: boolean; /** True, if the administrator can access the chat event log, boost list in channels, see channel members, report spam messages, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege */
     can_delete_messages: boolean; /** True, if the administrator can delete messages of other users */
     can_manage_video_chats: boolean; /** True, if the administrator can manage video chats */
-    can_restrict_members: boolean; /** True, if the administrator can restrict, ban or unban chat members */
+    can_restrict_members: boolean; /** True, if the administrator can restrict, ban or unban chat members, or access supergroup statistics */
     can_promote_members: boolean; /** True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that they have promoted, directly or indirectly (promoted by administrators that were appointed by the user) */
     can_change_info: boolean; /** True, if the user is allowed to change the chat title, photo and other settings */
     can_invite_users: boolean; /** True, if the user is allowed to invite new users to the chat */
-    can_post_messages?: boolean; /** Optional. True, if the administrator can post in the channel; channels only */
+    can_post_messages?: boolean; /** Optional. True, if the administrator can post messages in the channel, or access channel statistics; channels only */
     can_edit_messages?: boolean; /** Optional. True, if the administrator can edit messages of other users and can pin messages; channels only */
     can_pin_messages?: boolean; /** Optional. True, if the user is allowed to pin messages; groups and supergroups only */
+    can_post_stories?: boolean; /** Optional. True, if the administrator can post stories in the channel; channels only */
+    can_edit_stories?: boolean; /** Optional. True, if the administrator can edit stories posted by other users; channels only */
+    can_delete_stories?: boolean; /** Optional. True, if the administrator can delete stories posted by other users; channels only */
     can_manage_topics?: boolean; /** Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only */
   }>;
 
@@ -670,16 +675,19 @@ export namespace Telegram {
     user: User; /** Information about the user */
     can_be_edited: boolean; /** True, if the bot is allowed to edit administrator privileges of that user */
     is_anonymous: boolean; /** True, if the user's presence in the chat is hidden */
-    can_manage_chat: boolean; /** True, if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege */
+    can_manage_chat: boolean; /** True, if the administrator can access the chat event log, boost list in channels, see channel members, report spam messages, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege */
     can_delete_messages: boolean; /** True, if the administrator can delete messages of other users */
     can_manage_video_chats: boolean; /** True, if the administrator can manage video chats */
-    can_restrict_members: boolean; /** True, if the administrator can restrict, ban or unban chat members */
+    can_restrict_members: boolean; /** True, if the administrator can restrict, ban or unban chat members, or access supergroup statistics */
     can_promote_members: boolean; /** True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that they have promoted, directly or indirectly (promoted by administrators that were appointed by the user) */
     can_change_info: boolean; /** True, if the user is allowed to change the chat title, photo and other settings */
     can_invite_users: boolean; /** True, if the user is allowed to invite new users to the chat */
-    can_post_messages?: boolean; /** Optional. True, if the administrator can post in the channel; channels only */
+    can_post_messages?: boolean; /** Optional. True, if the administrator can post messages in the channel, or access channel statistics; channels only */
     can_edit_messages?: boolean; /** Optional. True, if the administrator can edit messages of other users and can pin messages; channels only */
     can_pin_messages?: boolean; /** Optional. True, if the user is allowed to pin messages; groups and supergroups only */
+    can_post_stories?: boolean; /** Optional. True, if the administrator can post stories in the channel; channels only */
+    can_edit_stories?: boolean; /** Optional. True, if the administrator can edit stories posted by other users; channels only */
+    can_delete_stories?: boolean; /** Optional. True, if the administrator can delete stories posted by other users; channels only */
     can_manage_topics?: boolean; /** Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only */
     custom_title?: string; /** Optional. Custom title for this user */
   }>;
@@ -752,7 +760,7 @@ export namespace Telegram {
   export type ChatJoinRequest = Readonly<{
     chat: Chat; /** Chat to which the request was sent */
     from: User; /** User that sent the join request */
-    user_chat_id: number; /** Identifier of a private chat with the user who sent the join request. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier. The bot can use this identifier for 24 hours to send messages until the join request is processed, assuming no other administrator contacted the user. */
+    user_chat_id: number; /** Identifier of a private chat with the user who sent the join request. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier. The bot can use this identifier for 5 minutes to send messages until the join request is processed, assuming no other administrator contacted the user. */
     date: number; /** Date the request was sent in Unix time */
     bio?: string; /** Optional. Bio of the user. */
     invite_link?: ChatInviteLink; /** Optional. Chat invite link that was used by the user to send the join request */
@@ -1853,7 +1861,7 @@ export namespace Telegram {
       offset?: number; /** Identifier of the first update to be returned. Must be greater by one than the highest among the identifiers of previously received updates. By default, updates starting with the earliest unconfirmed update are returned. An update is considered confirmed as soon as getUpdates is called with an offset higher than its update_id. The negative offset can be specified to retrieve updates starting from -offset update from the end of the updates queue. All previous updates will be forgotten. */
       limit?: number; /** Limits the number of updates to be retrieved. Values between 1-100 are accepted. Defaults to 100. */
       timeout?: number; /** Timeout in seconds for long polling. Defaults to 0, i.e. usual short polling. Should be positive, short polling should be used for testing purposes only. */
-      allowed_updates?: ReadonlyArray<string>; /** A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default). If not specified, the previous setting will be used.Please note that this parameter doesn't affect updates created before the call to the getUpdates, so unwanted updates may be received for a short period of time. */
+      allowed_updates?: ReadonlyArray<string>; /** A JSON-serialized list of the update types you want your bot to receive. For example, specify ["message", "edited_channel_post", "callback_query"] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default). If not specified, the previous setting will be used.Please note that this parameter doesn't affect updates created before the call to the getUpdates, so unwanted updates may be received for a short period of time. */
     }>;
 
     export type SetWebhook = Readonly<{
@@ -1861,7 +1869,7 @@ export namespace Telegram {
       certificate?: InputFile; /** Upload your public key certificate so that the root certificate in use can be checked. See our self-signed guide for details. */
       ip_address?: string; /** The fixed IP address which will be used to send webhook requests instead of the IP address resolved through DNS */
       max_connections?: number; /** The maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput. */
-      allowed_updates?: ReadonlyArray<string>; /** A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default). If not specified, the previous setting will be used.Please note that this parameter doesn't affect updates created before the call to the setWebhook, so unwanted updates may be received for a short period of time. */
+      allowed_updates?: ReadonlyArray<string>; /** A JSON-serialized list of the update types you want your bot to receive. For example, specify ["message", "edited_channel_post", "callback_query"] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default). If not specified, the previous setting will be used.Please note that this parameter doesn't affect updates created before the call to the setWebhook, so unwanted updates may be received for a short period of time. */
       drop_pending_updates?: boolean; /** Pass True to drop all pending updates */
       secret_token?: string; /** A secret token to be sent in a header “X-Telegram-Bot-Api-Secret-Token” in every webhook request, 1-256 characters. Only characters A-Z, a-z, 0-9, _ and - are allowed. The header is useful to ensure that the request comes from a webhook set by you. */
     }>;
@@ -2157,16 +2165,19 @@ export namespace Telegram {
       chat_id: number | string; /** Unique identifier for the target chat or username of the target channel (in the format @channelusername) */
       user_id: number; /** Unique identifier of the target user */
       is_anonymous?: boolean; /** Pass True if the administrator's presence in the chat is hidden */
-      can_manage_chat?: boolean; /** Pass True if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege */
-      can_post_messages?: boolean; /** Pass True if the administrator can create channel posts, channels only */
-      can_edit_messages?: boolean; /** Pass True if the administrator can edit messages of other users and can pin messages, channels only */
+      can_manage_chat?: boolean; /** Pass True if the administrator can access the chat event log, boost list in channels, see channel members, report spam messages, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege */
       can_delete_messages?: boolean; /** Pass True if the administrator can delete messages of other users */
       can_manage_video_chats?: boolean; /** Pass True if the administrator can manage video chats */
-      can_restrict_members?: boolean; /** Pass True if the administrator can restrict, ban or unban chat members */
+      can_restrict_members?: boolean; /** Pass True if the administrator can restrict, ban or unban chat members, or access supergroup statistics */
       can_promote_members?: boolean; /** Pass True if the administrator can add new administrators with a subset of their own privileges or demote administrators that they have promoted, directly or indirectly (promoted by administrators that were appointed by him) */
       can_change_info?: boolean; /** Pass True if the administrator can change chat title, photo and other settings */
       can_invite_users?: boolean; /** Pass True if the administrator can invite new users to the chat */
+      can_post_messages?: boolean; /** Pass True if the administrator can post messages in the channel, or access channel statistics; channels only */
+      can_edit_messages?: boolean; /** Pass True if the administrator can edit messages of other users and can pin messages; channels only */
       can_pin_messages?: boolean; /** Pass True if the administrator can pin messages, supergroups only */
+      can_post_stories?: boolean; /** Pass True if the administrator can post stories in the channel; channels only */
+      can_edit_stories?: boolean; /** Pass True if the administrator can edit stories posted by other users; channels only */
+      can_delete_stories?: boolean; /** Pass True if the administrator can delete stories posted by other users; channels only */
       can_manage_topics?: boolean; /** Pass True if the user is allowed to create, rename, close, and reopen forum topics, supergroups only */
     }>;
 
