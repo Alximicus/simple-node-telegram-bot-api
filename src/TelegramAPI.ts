@@ -62,6 +62,10 @@ export class TelegramAPI implements Telegram.Bot {
     return this._call('copyMessage', params);
   }
 
+  copyMessages(params: Telegram.Params.CopyMessages): ITelegramResponse<ReadonlyArray<Telegram.MessageId>> {
+    return this._call('copyMessages', params);
+  }
+
   createChatInviteLink(params: Telegram.Params.CreateChatInviteLink): ITelegramResponse<Telegram.ChatInviteLink> {
     return this._call('createChatInviteLink', params);
   }
@@ -96,6 +100,10 @@ export class TelegramAPI implements Telegram.Bot {
 
   deleteMessage(params: Telegram.Params.DeleteMessage): ITelegramResponse<true> {
     return this._call('deleteMessage', params);
+  }
+
+  deleteMessages(params: Telegram.Params.DeleteMessages): ITelegramResponse<true> {
+    return this._call('deleteMessages', params);
   }
 
   deleteMyCommands(params: Telegram.Params.DeleteMyCommands): ITelegramResponse<true> {
@@ -218,6 +226,10 @@ export class TelegramAPI implements Telegram.Bot {
     return this._call('getUpdates', params);
   }
 
+  getUserChatBoosts(params: Telegram.Params.GetUserChatBoosts): ITelegramResponse<Telegram.UserChatBoosts> {
+    return this._call('getUserChatBoosts', params);
+  }
+
   getUserProfilePhotos(params: Telegram.Params.GetUserProfilePhotos): ITelegramResponse<Telegram.UserProfilePhotos> {
     return this._call('getUserProfilePhotos', params);
   }
@@ -280,6 +292,10 @@ export class TelegramAPI implements Telegram.Bot {
     return this._call('sendChatAction', params);
   }
 
+  setMessageReaction(params: Telegram.Params.SetMessageReaction): ITelegramResponse<true> {
+    return this._call('setMessageReaction', params);
+  }
+
   sendContact(params: Telegram.Params.SendContact): ITelegramResponse<Telegram.Message> {
     return this._call('sendContact', params);
   }
@@ -313,6 +329,10 @@ export class TelegramAPI implements Telegram.Bot {
 
   sendMessage(params: Telegram.Params.SendMessage): ITelegramResponse<Telegram.Message> {
     return this._call('sendMessage', params);
+  }
+
+  forwardMessages(params: Telegram.Params.ForwardMessages): ITelegramResponse<ReadonlyArray<Telegram.MessageId>> {
+    return this._call('forwardMessages', params);
   }
 
   sendPhoto(params: Telegram.Params.SendPhoto): ITelegramResponse<Telegram.Message> {

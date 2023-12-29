@@ -1,6 +1,6 @@
 {
   "name": "@alximicus/simple-node-telegram-bot-api",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Simple Telegram bot API with type definitions for TypeScript.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
