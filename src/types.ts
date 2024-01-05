@@ -17,7 +17,7 @@ export namespace Telegram {
     channel_post?: Message; /** Optional. New incoming channel post of any kind - text, photo, sticker, etc. */
     edited_channel_post?: Message; /** Optional. New version of a channel post that is known to the bot and was edited */
     message_reaction?: MessageReactionUpdated; /** Optional. A reaction to a message was changed by a user. The bot must be an administrator in the chat and must explicitly specify "message_reaction" in the list of allowed_updates to receive these updates. The update isn't received for reactions set by bots. */
-    message_reaction_count?: MessageReactionCountUpdated; /** Optional. Reactions to a message with anonymous reactions were changed. The bot must be an administrator in the chat and must explicitly specify "message_reaction_count" in the list of allowed_updates to receive these updates. */
+    message_reaction_count?: MessageReactionCountUpdated; /** Optional. Reactions to a message with anonymous reactions were changed. The bot must be an administrator in the chat and must explicitly specify "message_reaction_count" in the list of allowed_updates to receive these updates. The updates are grouped and can be sent with delay up to a few minutes. */
     inline_query?: InlineQuery; /** Optional. New incoming inline query */
     chosen_inline_result?: ChosenInlineResult; /** Optional. The result of an inline query that was chosen by a user and sent to their chat partner. Please see our documentation on the feedback collecting for details on how to enable these updates for your bot. */
     callback_query?: CallbackQuery; /** Optional. New incoming callback query */
@@ -203,7 +203,7 @@ export namespace Telegram {
   export type InaccessibleMessage = Readonly<{
     chat: Chat; /** Chat the message belonged to */
     message_id: number; /** Unique message identifier inside the chat */
-    date: number; /** Always 0. The field can be used to differentiate regular and inaccessible messages. */
+    date: 0; /** Always 0. The field can be used to differentiate regular and inaccessible messages. */
   }>;
 
   /**
@@ -654,11 +654,11 @@ export namespace Telegram {
     resize_keyboard?: boolean; /** Optional. Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons). Defaults to false, in which case the custom keyboard is always of the same height as the app's standard keyboard. */
     one_time_keyboard?: boolean; /** Optional. Requests clients to hide the keyboard as soon as it's been used. The keyboard will still be available, but clients will automatically display the usual letter-keyboard in the chat - the user can press a special button in the input field to see the custom keyboard again. Defaults to false. */
     input_field_placeholder?: string; /** Optional. The placeholder to be shown in the input field when the keyboard is active; 1-64 characters */
-    selective?: boolean; /** Optional. Use this parameter if you want to show the keyboard to specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.Example: A user requests to change the bot's language, bot replies to the request with a keyboard to select the new language. Other users in the group don't see the keyboard. */
+    selective?: boolean; /** Optional. Use this parameter if you want to show the keyboard to specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply to a message in the same chat and forum topic, sender of the original message.Example: A user requests to change the bot's language, bot replies to the request with a keyboard to select the new language. Other users in the group don't see the keyboard. */
   }>;
 
   /**
-   * This object represents one button of the reply keyboard. For simple text buttons, String can be used instead of this object to specify the button text. The optional fields web_app, request_user, request_chat, request_contact, request_location, and request_poll are mutually exclusive.
+   * This object represents one button of the reply keyboard. For simple text buttons, String can be used instead of this object to specify the button text. The optional fields web_app, request_users, request_chat, request_contact, request_location, and request_poll are mutually exclusive.
    */
   export type KeyboardButton = Readonly<{
     text: string; /** Text of the button. If none of the optional fields are used, it will be sent as a message when the button is pressed */
@@ -706,7 +706,7 @@ export namespace Telegram {
    */
   export type ReplyKeyboardRemove = Readonly<{
     remove_keyboard: true; /** Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use one_time_keyboard in ReplyKeyboardMarkup) */
-    selective?: boolean; /** Optional. Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.Example: A user votes in a poll, bot returns confirmation message in reply to the vote and removes the keyboard for that user, while still showing the keyboard with poll options to users who haven't voted yet. */
+    selective?: boolean; /** Optional. Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply to a message in the same chat and forum topic, sender of the original message.Example: A user votes in a poll, bot returns confirmation message in reply to the vote and removes the keyboard for that user, while still showing the keyboard with poll options to users who haven't voted yet. */
   }>;
 
   /**
@@ -772,7 +772,7 @@ export namespace Telegram {
   export type ForceReply = Readonly<{
     force_reply: true; /** Shows reply interface to the user, as if they manually selected the bot's message and tapped 'Reply' */
     input_field_placeholder?: string; /** Optional. The placeholder to be shown in the input field when the reply is active; 1-64 characters */
-    selective?: boolean; /** Optional. Use this parameter if you want to force reply from specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message. */
+    selective?: boolean; /** Optional. Use this parameter if you want to force reply from specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply to a message in the same chat and forum topic, sender of the original message. */
   }>;
 
   /**
@@ -971,7 +971,7 @@ export namespace Telegram {
    */
   export type ReactionTypeCustomEmoji = Readonly<{
     type: string; /** Type of the reaction, always “custom_emoji” */
-    custom_emoji: string; /** Custom emoji identifier */
+    custom_emoji_id: string; /** Custom emoji identifier */
   }>;
 
   /**
@@ -2429,7 +2429,7 @@ export namespace Telegram {
 
     export type SetMessageReaction = Readonly<{
       chat_id: number | string; /** Unique identifier for the target chat or username of the target channel (in the format @channelusername) */
-      message_id: number; /** Identifier of the target message */
+      message_id: number; /** Identifier of the target message. If the message belongs to a media group, the reaction is set to the first non-deleted message in the group instead. */
       reaction?: ReadonlyArray<ReactionType>; /** New list of reaction types to set on the message. Currently, as non-premium users, bots can set up to one reaction per message. A custom emoji reaction can be used if it is either already present on the message or explicitly allowed by chat administrators. */
       is_big?: boolean; /** Pass True to set the reaction with a big animation */
     }>;
@@ -3147,7 +3147,7 @@ export namespace Telegram {
     sendChatAction(params: Telegram.Params.SendChatAction): ITelegramResponse<true>;
 
     /**
-     * Use this method to change the chosen reactions on a message. Service messages can't be reacted to. Automatically forwarded messages from a channel to its discussion group have the same available reactions as messages in the channel. In albums, bots must react to the first message. Returns True on success.
+     * Use this method to change the chosen reactions on a message. Service messages can't be reacted to. Automatically forwarded messages from a channel to its discussion group have the same available reactions as messages in the channel. Returns True on success.
      */
     setMessageReaction(params: Telegram.Params.SetMessageReaction): ITelegramResponse<true>;
 
