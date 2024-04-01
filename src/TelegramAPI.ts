@@ -114,6 +114,10 @@ export class TelegramAPI implements Telegram.Bot {
     return this._call('deleteStickerFromSet', params);
   }
 
+  replaceStickerInSet(params: Telegram.Params.ReplaceStickerInSet): ITelegramResponse<true> {
+    return this._call('replaceStickerInSet', params);
+  }
+
   deleteStickerSet(params: Telegram.Params.DeleteStickerSet): ITelegramResponse<true> {
     return this._call('deleteStickerSet', params);
   }
@@ -228,6 +232,10 @@ export class TelegramAPI implements Telegram.Bot {
 
   getUserChatBoosts(params: Telegram.Params.GetUserChatBoosts): ITelegramResponse<Telegram.UserChatBoosts> {
     return this._call('getUserChatBoosts', params);
+  }
+
+  getBusinessConnection(params: Telegram.Params.GetBusinessConnection): ITelegramResponse<Telegram.BusinessConnection> {
+    return this._call('getBusinessConnection', params);
   }
 
   getUserProfilePhotos(params: Telegram.Params.GetUserProfilePhotos): ITelegramResponse<Telegram.UserProfilePhotos> {
