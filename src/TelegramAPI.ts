@@ -266,6 +266,10 @@ export class TelegramAPI implements Telegram.Bot {
     return this._call('promoteChatMember', params);
   }
 
+  refundStarPayment(params: Telegram.Params.RefundStarPayment): ITelegramResponse<true> {
+    return this._call('refundStarPayment', params);
+  }
+
   reopenForumTopic(params: Telegram.Params.ReopenForumTopic): ITelegramResponse<true> {
     return this._call('reopenForumTopic', params);
   }

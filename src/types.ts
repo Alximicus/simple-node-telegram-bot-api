@@ -1,6 +1,6 @@
 /**
- Bot API 7.2
- March 31, 2024
+ Bot API 7.4
+ May 28, 2024
  */
 
 export namespace Telegram {
@@ -17,7 +17,7 @@ export namespace Telegram {
     channel_post?: Message; /** Optional. New incoming channel post of any kind - text, photo, sticker, etc. */
     edited_channel_post?: Message; /** Optional. New version of a channel post that is known to the bot and was edited. This update may at times be triggered by changes to message fields that are either unavailable or not actively used by your bot. */
     business_connection?: BusinessConnection; /** Optional. The bot was connected to or disconnected from a business account, or a user edited an existing connection with the bot */
-    business_message?: Message; /** Optional. New non-service message from a connected business account */
+    business_message?: Message; /** Optional. New message from a connected business account */
     edited_business_message?: Message; /** Optional. New version of a message from a connected business account */
     deleted_business_messages?: BusinessMessagesDeleted; /** Optional. Messages were deleted from a connected business account */
     message_reaction?: MessageReactionUpdated; /** Optional. A reaction to a message was changed by a user. The bot must be an administrator in the chat and must explicitly specify "message_reaction" in the list of allowed_updates to receive these updates. The update isn't received for reactions set by bots. */
@@ -79,47 +79,61 @@ export namespace Telegram {
    */
   export type Chat = Readonly<{
     id: number; /** Unique identifier for this chat. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this identifier. */
-    type: string; /** Type of chat, can be either “private”, “group”, “supergroup” or “channel” */
+    type: string; /** Type of the chat, can be either “private”, “group”, “supergroup” or “channel” */
     title?: string; /** Optional. Title, for supergroups, channels and group chats */
     username?: string; /** Optional. Username, for private chats, supergroups and channels if available */
     first_name?: string; /** Optional. First name of the other party in a private chat */
     last_name?: string; /** Optional. Last name of the other party in a private chat */
     is_forum?: true; /** Optional. True, if the supergroup chat is a forum (has topics enabled) */
-    photo?: ChatPhoto; /** Optional. Chat photo. Returned only in getChat. */
-    active_usernames?: ReadonlyArray<string>; /** Optional. If non-empty, the list of all active chat usernames; for private chats, supergroups and channels. Returned only in getChat. */
-    birthdate?: Birthdate; /** Optional. For private chats, the date of birth of the user. Returned only in getChat. */
-    business_intro?: BusinessIntro; /** Optional. For private chats with business accounts, the intro of the business. Returned only in getChat. */
-    business_location?: BusinessLocation; /** Optional. For private chats with business accounts, the location of the business. Returned only in getChat. */
-    business_opening_hours?: BusinessOpeningHours; /** Optional. For private chats with business accounts, the opening hours of the business. Returned only in getChat. */
-    personal_chat?: Chat; /** Optional. For private chats, the personal channel of the user. Returned only in getChat. */
-    available_reactions?: ReadonlyArray<ReactionType>; /** Optional. List of available reactions allowed in the chat. If omitted, then all emoji reactions are allowed. Returned only in getChat. */
-    accent_color_id?: number; /** Optional. Identifier of the accent color for the chat name and backgrounds of the chat photo, reply header, and link preview. See accent colors for more details. Returned only in getChat. Always returned in getChat. */
-    background_custom_emoji_id?: string; /** Optional. Custom emoji identifier of emoji chosen by the chat for the reply header and link preview background. Returned only in getChat. */
-    profile_accent_color_id?: number; /** Optional. Identifier of the accent color for the chat's profile background. See profile accent colors for more details. Returned only in getChat. */
-    profile_background_custom_emoji_id?: string; /** Optional. Custom emoji identifier of the emoji chosen by the chat for its profile background. Returned only in getChat. */
-    emoji_status_custom_emoji_id?: string; /** Optional. Custom emoji identifier of the emoji status of the chat or the other party in a private chat. Returned only in getChat. */
-    emoji_status_expiration_date?: number; /** Optional. Expiration date of the emoji status of the chat or the other party in a private chat, in Unix time, if any. Returned only in getChat. */
-    bio?: string; /** Optional. Bio of the other party in a private chat. Returned only in getChat. */
-    has_private_forwards?: true; /** Optional. True, if privacy settings of the other party in the private chat allows to use tg://user?id=<user_id> links only in chats with the user. Returned only in getChat. */
-    has_restricted_voice_and_video_messages?: true; /** Optional. True, if the privacy settings of the other party restrict sending voice and video note messages in the private chat. Returned only in getChat. */
-    join_to_send_messages?: true; /** Optional. True, if users need to join the supergroup before they can send messages. Returned only in getChat. */
-    join_by_request?: true; /** Optional. True, if all users directly joining the supergroup need to be approved by supergroup administrators. Returned only in getChat. */
-    description?: string; /** Optional. Description, for groups, supergroups and channel chats. Returned only in getChat. */
-    invite_link?: string; /** Optional. Primary invite link, for groups, supergroups and channel chats. Returned only in getChat. */
-    pinned_message?: Message; /** Optional. The most recent pinned message (by sending date). Returned only in getChat. */
-    permissions?: ChatPermissions; /** Optional. Default chat member permissions, for groups and supergroups. Returned only in getChat. */
-    slow_mode_delay?: number; /** Optional. For supergroups, the minimum allowed delay between consecutive messages sent by each unprivileged user; in seconds. Returned only in getChat. */
-    unrestrict_boost_count?: number; /** Optional. For supergroups, the minimum number of boosts that a non-administrator user needs to add in order to ignore slow mode and chat permissions. Returned only in getChat. */
-    message_auto_delete_time?: number; /** Optional. The time after which all messages sent to the chat will be automatically deleted; in seconds. Returned only in getChat. */
-    has_aggressive_anti_spam_enabled?: true; /** Optional. True, if aggressive anti-spam checks are enabled in the supergroup. The field is only available to chat administrators. Returned only in getChat. */
-    has_hidden_members?: true; /** Optional. True, if non-administrators can only get the list of bots and administrators in the chat. Returned only in getChat. */
-    has_protected_content?: true; /** Optional. True, if messages from the chat can't be forwarded to other chats. Returned only in getChat. */
-    has_visible_history?: true; /** Optional. True, if new chat members will have access to old messages; available only to chat administrators. Returned only in getChat. */
-    sticker_set_name?: string; /** Optional. For supergroups, name of group sticker set. Returned only in getChat. */
-    can_set_sticker_set?: true; /** Optional. True, if the bot can change the group sticker set. Returned only in getChat. */
-    custom_emoji_sticker_set_name?: string; /** Optional. For supergroups, the name of the group's custom emoji sticker set. Custom emoji from this set can be used by all users and bots in the group. Returned only in getChat. */
-    linked_chat_id?: number; /** Optional. Unique identifier for the linked chat, i.e. the discussion group identifier for a channel and vice versa; for supergroups and channel chats. This identifier may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. Returned only in getChat. */
-    location?: ChatLocation; /** Optional. For supergroups, the location to which the supergroup is connected. Returned only in getChat. */
+  }>;
+
+  /**
+   * This object contains full information about a chat.
+   */
+  export type ChatFullInfo = Readonly<{
+    id: number; /** Unique identifier for this chat. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this identifier. */
+    type: string; /** Type of the chat, can be either “private”, “group”, “supergroup” or “channel” */
+    title?: string; /** Optional. Title, for supergroups, channels and group chats */
+    username?: string; /** Optional. Username, for private chats, supergroups and channels if available */
+    first_name?: string; /** Optional. First name of the other party in a private chat */
+    last_name?: string; /** Optional. Last name of the other party in a private chat */
+    is_forum?: true; /** Optional. True, if the supergroup chat is a forum (has topics enabled) */
+    accent_color_id: number; /** Identifier of the accent color for the chat name and backgrounds of the chat photo, reply header, and link preview. See accent colors for more details. */
+    max_reaction_count: number; /** The maximum number of reactions that can be set on a message in the chat */
+    photo?: ChatPhoto; /** Optional. Chat photo */
+    active_usernames?: ReadonlyArray<string>; /** Optional. If non-empty, the list of all active chat usernames; for private chats, supergroups and channels */
+    birthdate?: Birthdate; /** Optional. For private chats, the date of birth of the user */
+    business_intro?: BusinessIntro; /** Optional. For private chats with business accounts, the intro of the business */
+    business_location?: BusinessLocation; /** Optional. For private chats with business accounts, the location of the business */
+    business_opening_hours?: BusinessOpeningHours; /** Optional. For private chats with business accounts, the opening hours of the business */
+    personal_chat?: Chat; /** Optional. For private chats, the personal channel of the user */
+    available_reactions?: ReadonlyArray<ReactionType>; /** Optional. List of available reactions allowed in the chat. If omitted, then all emoji reactions are allowed. */
+    background_custom_emoji_id?: string; /** Optional. Custom emoji identifier of the emoji chosen by the chat for the reply header and link preview background */
+    profile_accent_color_id?: number; /** Optional. Identifier of the accent color for the chat's profile background. See profile accent colors for more details. */
+    profile_background_custom_emoji_id?: string; /** Optional. Custom emoji identifier of the emoji chosen by the chat for its profile background */
+    emoji_status_custom_emoji_id?: string; /** Optional. Custom emoji identifier of the emoji status of the chat or the other party in a private chat */
+    emoji_status_expiration_date?: number; /** Optional. Expiration date of the emoji status of the chat or the other party in a private chat, in Unix time, if any */
+    bio?: string; /** Optional. Bio of the other party in a private chat */
+    has_private_forwards?: true; /** Optional. True, if privacy settings of the other party in the private chat allows to use tg://user?id=<user_id> links only in chats with the user */
+    has_restricted_voice_and_video_messages?: true; /** Optional. True, if the privacy settings of the other party restrict sending voice and video note messages in the private chat */
+    join_to_send_messages?: true; /** Optional. True, if users need to join the supergroup before they can send messages */
+    join_by_request?: true; /** Optional. True, if all users directly joining the supergroup without using an invite link need to be approved by supergroup administrators */
+    description?: string; /** Optional. Description, for groups, supergroups and channel chats */
+    invite_link?: string; /** Optional. Primary invite link, for groups, supergroups and channel chats */
+    pinned_message?: Message; /** Optional. The most recent pinned message (by sending date) */
+    permissions?: ChatPermissions; /** Optional. Default chat member permissions, for groups and supergroups */
+    slow_mode_delay?: number; /** Optional. For supergroups, the minimum allowed delay between consecutive messages sent by each unprivileged user; in seconds */
+    unrestrict_boost_count?: number; /** Optional. For supergroups, the minimum number of boosts that a non-administrator user needs to add in order to ignore slow mode and chat permissions */
+    message_auto_delete_time?: number; /** Optional. The time after which all messages sent to the chat will be automatically deleted; in seconds */
+    has_aggressive_anti_spam_enabled?: true; /** Optional. True, if aggressive anti-spam checks are enabled in the supergroup. The field is only available to chat administrators. */
+    has_hidden_members?: true; /** Optional. True, if non-administrators can only get the list of bots and administrators in the chat */
+    has_protected_content?: true; /** Optional. True, if messages from the chat can't be forwarded to other chats */
+    has_visible_history?: true; /** Optional. True, if new chat members will have access to old messages; available only to chat administrators */
+    sticker_set_name?: string; /** Optional. For supergroups, name of the group sticker set */
+    can_set_sticker_set?: true; /** Optional. True, if the bot can change the group sticker set */
+    custom_emoji_sticker_set_name?: string; /** Optional. For supergroups, the name of the group's custom emoji sticker set. Custom emoji from this set can be used by all users and bots in the group. */
+    linked_chat_id?: number; /** Optional. Unique identifier for the linked chat, i.e. the discussion group identifier for a channel and vice versa; for supergroups and channel chats. This identifier may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. */
+    location?: ChatLocation; /** Optional. For supergroups, the location to which the supergroup is connected */
   }>;
 
   /**
@@ -151,6 +165,7 @@ export namespace Telegram {
     text?: string; /** Optional. For text messages, the actual UTF-8 text of the message */
     entities?: ReadonlyArray<MessageEntity>; /** Optional. For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text */
     link_preview_options?: LinkPreviewOptions; /** Optional. Options used for link preview generation for the message, if it is a text message and link preview options were changed */
+    effect_id?: string; /** Optional. Unique identifier of the message effect added to the message */
     animation?: Animation; /** Optional. Message is an animation, information about the animation. For backward compatibility, when this field is set, the document field will also be set */
     audio?: Audio; /** Optional. Message is an audio file, information about the file */
     document?: Document; /** Optional. Message is a general file, information about the file */
@@ -162,6 +177,7 @@ export namespace Telegram {
     voice?: Voice; /** Optional. Message is a voice message, information about the file */
     caption?: string; /** Optional. Caption for the animation, audio, document, photo, video or voice */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption */
+    show_caption_above_media?: true; /** Optional. True, if the caption must be shown above the message media */
     has_media_spoiler?: true; /** Optional. True, if the message media is covered by a spoiler animation */
     contact?: Contact; /** Optional. Message is a shared contact, information about the contact */
     dice?: Dice; /** Optional. Message is a dice with random value */
@@ -190,6 +206,7 @@ export namespace Telegram {
     passport_data?: PassportData; /** Optional. Telegram Passport data */
     proximity_alert_triggered?: ProximityAlertTriggered; /** Optional. Service message. A user in the chat triggered another user's proximity alert while sharing Live Location. */
     boost_added?: ChatBoostAdded; /** Optional. Service message: user boosted the chat */
+    chat_background_set?: ChatBackground; /** Optional. Service message: chat background set */
     forum_topic_created?: ForumTopicCreated; /** Optional. Service message: forum topic created */
     forum_topic_edited?: ForumTopicEdited; /** Optional. Service message: forum topic edited */
     forum_topic_closed?: ForumTopicClosed; /** Optional. Service message: forum topic closed */
@@ -228,7 +245,7 @@ export namespace Telegram {
    * This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
    */
   export type MessageEntity = Readonly<{
-    type: string; /** Type of the entity. Currently, can be “mention” (@username), “hashtag” (#hashtag), “cashtag” ($USD), “bot_command” (/start@jobs_bot), “url” (https://telegram.org), “email” (do-not-reply@telegram.org), “phone_number” (+1-212-555-0123), “bold” (bold text), “italic” (italic text), “underline” (underlined text), “strikethrough” (strikethrough text), “spoiler” (spoiler message), “blockquote” (block quotation), “code” (monowidth string), “pre” (monowidth block), “text_link” (for clickable text URLs), “text_mention” (for users without usernames), “custom_emoji” (for inline custom emoji stickers) */
+    type: string; /** Type of the entity. Currently, can be “mention” (@username), “hashtag” (#hashtag), “cashtag” ($USD), “bot_command” (/start@jobs_bot), “url” (https://telegram.org), “email” (do-not-reply@telegram.org), “phone_number” (+1-212-555-0123), “bold” (bold text), “italic” (italic text), “underline” (underlined text), “strikethrough” (strikethrough text), “spoiler” (spoiler message), “blockquote” (block quotation), “expandable_blockquote” (collapsed-by-default block quotation), “code” (monowidth string), “pre” (monowidth block), “text_link” (for clickable text URLs), “text_mention” (for users without usernames), “custom_emoji” (for inline custom emoji stickers) */
     offset: number; /** Offset in UTF-16 code units to the start of the entity */
     length: number; /** Length of the entity in UTF-16 code units */
     url?: string; /** Optional. For “text_link” only, URL that will be opened after user taps on the text */
@@ -451,7 +468,17 @@ export namespace Telegram {
    */
   export type PollOption = Readonly<{
     text: string; /** Option text, 1-100 characters */
+    text_entities?: ReadonlyArray<MessageEntity>; /** Optional. Special entities that appear in the option text. Currently, only custom emoji entities are allowed in poll option texts */
     voter_count: number; /** Number of users that voted for this option */
+  }>;
+
+  /**
+   * This object contains information about one answer option in a poll to send.
+   */
+  export type InputPollOption = Readonly<{
+    text: string; /** Option text, 1-100 characters */
+    text_parse_mode?: string; /** Optional. Mode for parsing entities in the text. See formatting options for more details. Currently, only custom emoji entities are allowed */
+    text_entities?: ReadonlyArray<MessageEntity>; /** Optional. A JSON-serialized list of special entities that appear in the poll option text. It can be specified instead of text_parse_mode */
   }>;
 
   /**
@@ -470,6 +497,7 @@ export namespace Telegram {
   export type Poll = Readonly<{
     id: string; /** Unique poll identifier */
     question: string; /** Poll question, 1-300 characters */
+    question_entities?: ReadonlyArray<MessageEntity>; /** Optional. Special entities that appear in the question. Currently, only custom emoji entities are allowed in poll questions */
     options: ReadonlyArray<PollOption>; /** List of poll options */
     total_voter_count: number; /** Total number of users that voted in the poll */
     is_closed: boolean; /** True, if the poll is closed */
@@ -540,6 +568,79 @@ export namespace Telegram {
   }>;
 
   /**
+   * The background is filled using the selected color.
+   */
+  export type BackgroundFillSolid = Readonly<{
+    type: string; /** Type of the background fill, always “solid” */
+    color: number; /** The color of the background fill in the RGB24 format */
+  }>;
+
+  /**
+   * The background is a gradient fill.
+   */
+  export type BackgroundFillGradient = Readonly<{
+    type: string; /** Type of the background fill, always “gradient” */
+    top_color: number; /** Top color of the gradient in the RGB24 format */
+    bottom_color: number; /** Bottom color of the gradient in the RGB24 format */
+    rotation_angle: number; /** Clockwise rotation angle of the background fill in degrees; 0-359 */
+  }>;
+
+  /**
+   * The background is a freeform gradient that rotates after every message in the chat.
+   */
+  export type BackgroundFillFreeformGradient = Readonly<{
+    type: string; /** Type of the background fill, always “freeform_gradient” */
+    colors: ReadonlyArray<number>; /** A list of the 3 or 4 base colors that are used to generate the freeform gradient in the RGB24 format */
+  }>;
+
+  /**
+   * The background is automatically filled based on the selected colors.
+   */
+  export type BackgroundTypeFill = Readonly<{
+    type: string; /** Type of the background, always “fill” */
+    fill: BackgroundFill; /** The background fill */
+    dark_theme_dimming: number; /** Dimming of the background in dark themes, as a percentage; 0-100 */
+  }>;
+
+  /**
+   * The background is a wallpaper in the JPEG format.
+   */
+  export type BackgroundTypeWallpaper = Readonly<{
+    type: string; /** Type of the background, always “wallpaper” */
+    document: Document; /** Document with the wallpaper */
+    dark_theme_dimming: number; /** Dimming of the background in dark themes, as a percentage; 0-100 */
+    is_blurred?: true; /** Optional. True, if the wallpaper is downscaled to fit in a 450x450 square and then box-blurred with radius 12 */
+    is_moving?: true; /** Optional. True, if the background moves slightly when the device is tilted */
+  }>;
+
+  /**
+   * The background is a PNG or TGV (gzipped subset of SVG with MIME type “application/x-tgwallpattern”) pattern to be combined with the background fill chosen by the user.
+   */
+  export type BackgroundTypePattern = Readonly<{
+    type: string; /** Type of the background, always “pattern” */
+    document: Document; /** Document with the pattern */
+    fill: BackgroundFill; /** The background fill that is combined with the pattern */
+    intensity: number; /** Intensity of the pattern when it is shown above the filled background; 0-100 */
+    is_inverted?: true; /** Optional. True, if the background fill must be applied only to the pattern itself. All other pixels are black in this case. For dark themes only */
+    is_moving?: true; /** Optional. True, if the background moves slightly when the device is tilted */
+  }>;
+
+  /**
+   * The background is taken directly from a built-in chat theme.
+   */
+  export type BackgroundTypeChatTheme = Readonly<{
+    type: string; /** Type of the background, always “chat_theme” */
+    theme_name: string; /** Name of the chat theme, which is usually an emoji */
+  }>;
+
+  /**
+   * This object represents a chat background.
+   */
+  export type ChatBackground = Readonly<{
+    type: BackgroundType; /** Type of the background */
+  }>;
+
+  /**
    * This object represents a service message about a new forum topic created in the chat.
    */
   export type ForumTopicCreated = Readonly<{
@@ -557,7 +658,7 @@ export namespace Telegram {
   }>;
 
   /**
-   * This object contains information about a user that was shared with the bot using a KeyboardButtonRequestUser button.
+   * This object contains information about a user that was shared with the bot using a KeyboardButtonRequestUsers button.
    */
   export type SharedUser = Readonly<{
     user_id: number; /** Identifier of the shared user. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so 64-bit integers or double-precision float types are safe for storing these identifiers. The bot may not have access to the user and could be unable to use this identifier, unless the user is already known to the bot by some other means. */
@@ -693,7 +794,7 @@ export namespace Telegram {
   }>;
 
   /**
-   * This object represents a custom keyboard with reply options (see Introduction to bots for details and examples).
+   * This object represents a custom keyboard with reply options (see Introduction to bots for details and examples). Not supported in channels and for messages sent on behalf of a Telegram Business account.
    */
   export type ReplyKeyboardMarkup = Readonly<{
     keyboard: ReadonlyArray<ReadonlyArray<KeyboardButton>>; /** Array of button rows, each represented by an Array of KeyboardButton objects */
@@ -705,7 +806,7 @@ export namespace Telegram {
   }>;
 
   /**
-   * This object represents one button of the reply keyboard. For simple text buttons, String can be used instead of this object to specify the button text. The optional fields web_app, request_users, request_chat, request_contact, request_location, and request_poll are mutually exclusive.
+   * This object represents one button of the reply keyboard. At most one of the optional fields must be used to specify type of the button. For simple text buttons, String can be used instead of this object to specify the button text.
    */
   export type KeyboardButton = Readonly<{
     text: string; /** Text of the button. If none of the optional fields are used, it will be sent as a message when the button is pressed */
@@ -725,13 +826,13 @@ export namespace Telegram {
     user_is_bot?: boolean; /** Optional. Pass True to request bots, pass False to request regular users. If not specified, no additional restrictions are applied. */
     user_is_premium?: boolean; /** Optional. Pass True to request premium users, pass False to request non-premium users. If not specified, no additional restrictions are applied. */
     max_quantity?: number; /** Optional. The maximum number of users to be selected; 1-10. Defaults to 1. */
-    request_name?: boolean; /** Optional. Pass True to request the users' first and last name */
-    request_username?: boolean; /** Optional. Pass True to request the users' username */
-    request_photo?: boolean; /** Optional. Pass True to request the users' photo */
+    request_name?: boolean; /** Optional. Pass True to request the users' first and last names */
+    request_username?: boolean; /** Optional. Pass True to request the users' usernames */
+    request_photo?: boolean; /** Optional. Pass True to request the users' photos */
   }>;
 
   /**
-   * This object defines the criteria used to request a suitable chat. Information about the selected chat will be shared with the bot when the corresponding button is pressed. The bot will be granted requested rights in the сhat if appropriate More about requesting chats »
+   * This object defines the criteria used to request a suitable chat. Information about the selected chat will be shared with the bot when the corresponding button is pressed. The bot will be granted requested rights in the chat if appropriate. More about requesting chats ».
    */
   export type KeyboardButtonRequestChat = Readonly<{
     request_id: number; /** Signed 32-bit identifier of the request, which will be received back in the ChatShared object. Must be unique within the message */
@@ -755,7 +856,7 @@ export namespace Telegram {
   }>;
 
   /**
-   * Upon receiving a message with this object, Telegram clients will remove the current custom keyboard and display the default letter-keyboard. By default, custom keyboards are displayed until a new keyboard is sent by a bot. An exception is made for one-time keyboards that are hidden immediately after the user presses a button (see ReplyKeyboardMarkup).
+   * Upon receiving a message with this object, Telegram clients will remove the current custom keyboard and display the default letter-keyboard. By default, custom keyboards are displayed until a new keyboard is sent by a bot. An exception is made for one-time keyboards that are hidden immediately after the user presses a button (see ReplyKeyboardMarkup). Not supported in channels and for messages sent on behalf of a Telegram Business account.
    */
   export type ReplyKeyboardRemove = Readonly<{
     remove_keyboard: true; /** Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use one_time_keyboard in ReplyKeyboardMarkup) */
@@ -770,19 +871,19 @@ export namespace Telegram {
   }>;
 
   /**
-   * This object represents one button of an inline keyboard. You must use exactly one of the optional fields.
+   * This object represents one button of an inline keyboard. Exactly one of the optional fields must be used to specify type of the button.
    */
   export type InlineKeyboardButton = Readonly<{
     text: string; /** Label text on the button */
     url?: string; /** Optional. HTTP or tg:// URL to be opened when the button is pressed. Links tg://user?id=<user_id> can be used to mention a user by their identifier without using a username, if this is allowed by their privacy settings. */
-    callback_data?: string; /** Optional. Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes */
-    web_app?: WebAppInfo; /** Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Available only in private chats between a user and the bot. */
+    callback_data?: string; /** Optional. Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes. Not supported for messages sent on behalf of a Telegram Business account. */
+    web_app?: WebAppInfo; /** Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Available only in private chats between a user and the bot. Not supported for messages sent on behalf of a Telegram Business account. */
     login_url?: LoginUrl; /** Optional. An HTTPS URL used to automatically authorize the user. Can be used as a replacement for the Telegram Login Widget. */
-    switch_inline_query?: string; /** Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot's username and the specified inline query in the input field. May be empty, in which case just the bot's username will be inserted. */
-    switch_inline_query_current_chat?: string; /** Optional. If set, pressing the button will insert the bot's username and the specified inline query in the current chat's input field. May be empty, in which case only the bot's username will be inserted.This offers a quick way for the user to open your bot in inline mode in the same chat - good for selecting something from multiple options. */
-    switch_inline_query_chosen_chat?: SwitchInlineQueryChosenChat; /** Optional. If set, pressing the button will prompt the user to select one of their chats of the specified type, open that chat and insert the bot's username and the specified inline query in the input field */
+    switch_inline_query?: string; /** Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot's username and the specified inline query in the input field. May be empty, in which case just the bot's username will be inserted. Not supported for messages sent on behalf of a Telegram Business account. */
+    switch_inline_query_current_chat?: string; /** Optional. If set, pressing the button will insert the bot's username and the specified inline query in the current chat's input field. May be empty, in which case only the bot's username will be inserted.This offers a quick way for the user to open your bot in inline mode in the same chat - good for selecting something from multiple options. Not supported in channels and for messages sent on behalf of a Telegram Business account. */
+    switch_inline_query_chosen_chat?: SwitchInlineQueryChosenChat; /** Optional. If set, pressing the button will prompt the user to select one of their chats of the specified type, open that chat and insert the bot's username and the specified inline query in the input field. Not supported for messages sent on behalf of a Telegram Business account. */
     callback_game?: CallbackGame; /** Optional. Description of the game that will be launched when the user presses the button.NOTE: This type of button must always be the first button in the first row. */
-    pay?: boolean; /** Optional. Specify True, to send a Pay button.NOTE: This type of button must always be the first button in the first row and can only be used in invoice messages. */
+    pay?: boolean; /** Optional. Specify True, to send a Pay button. Substrings “” and “XTR” in the buttons's text will be replaced with a Telegram Star icon.NOTE: This type of button must always be the first button in the first row and can only be used in invoice messages. */
   }>;
 
   /**
@@ -820,7 +921,7 @@ export namespace Telegram {
   }>;
 
   /**
-   * Upon receiving a message with this object, Telegram clients will display a reply interface to the user (act as if the user has selected the bot's message and tapped 'Reply'). This can be extremely useful if you want to create user-friendly step-by-step interfaces without having to sacrifice privacy mode.
+   * Upon receiving a message with this object, Telegram clients will display a reply interface to the user (act as if the user has selected the bot's message and tapped 'Reply'). This can be extremely useful if you want to create user-friendly step-by-step interfaces without having to sacrifice privacy mode. Not supported in channels and for messages sent on behalf of a Telegram Business account.
    */
   export type ForceReply = Readonly<{
     force_reply: true; /** Shows reply interface to the user, as if they manually selected the bot's message and tapped 'Reply' */
@@ -866,7 +967,7 @@ export namespace Telegram {
     can_change_info: boolean; /** True, if the user is allowed to change the chat title, photo and other settings */
     can_invite_users: boolean; /** True, if the user is allowed to invite new users to the chat */
     can_post_stories: boolean; /** True, if the administrator can post stories to the chat */
-    can_edit_stories: boolean; /** True, if the administrator can edit stories posted by other users */
+    can_edit_stories: boolean; /** True, if the administrator can edit stories posted by other users, post stories to the chat page, pin chat stories, and access the chat's story archive */
     can_delete_stories: boolean; /** True, if the administrator can delete stories posted by other users */
     can_post_messages?: boolean; /** Optional. True, if the administrator can post messages in the channel, or access channel statistics; for channels only */
     can_edit_messages?: boolean; /** Optional. True, if the administrator can edit messages of other users and can pin messages; for channels only */
@@ -884,6 +985,7 @@ export namespace Telegram {
     old_chat_member: ChatMember; /** Previous information about the chat member */
     new_chat_member: ChatMember; /** New information about the chat member */
     invite_link?: ChatInviteLink; /** Optional. Chat invite link, which was used by the user to join the chat; for joining by invite link events only. */
+    via_join_request?: boolean; /** Optional. True, if the user joined the chat after sending a direct join request without using an invite link and being approved by an administrator */
     via_chat_folder_invite_link?: boolean; /** Optional. True, if the user joined the chat via a chat folder invite link */
   }>;
 
@@ -913,7 +1015,7 @@ export namespace Telegram {
     can_change_info: boolean; /** True, if the user is allowed to change the chat title, photo and other settings */
     can_invite_users: boolean; /** True, if the user is allowed to invite new users to the chat */
     can_post_stories: boolean; /** True, if the administrator can post stories to the chat */
-    can_edit_stories: boolean; /** True, if the administrator can edit stories posted by other users */
+    can_edit_stories: boolean; /** True, if the administrator can edit stories posted by other users, post stories to the chat page, pin chat stories, and access the chat's story archive */
     can_delete_stories: boolean; /** True, if the administrator can delete stories posted by other users */
     can_post_messages?: boolean; /** Optional. True, if the administrator can post messages in the channel, or access channel statistics; for channels only */
     can_edit_messages?: boolean; /** Optional. True, if the administrator can edit messages of other users and can pin messages; for channels only */
@@ -1004,7 +1106,7 @@ export namespace Telegram {
   }>;
 
   /**
-   *
+   * Describes the birthdate of a user.
    */
   export type Birthdate = Readonly<{
     day: number; /** Day of the user's birth; 1-31 */
@@ -1013,7 +1115,7 @@ export namespace Telegram {
   }>;
 
   /**
-   *
+   * Contains information about the start page settings of a Telegram Business account.
    */
   export type BusinessIntro = Readonly<{
     title?: string; /** Optional. Title text of the business intro */
@@ -1022,7 +1124,7 @@ export namespace Telegram {
   }>;
 
   /**
-   *
+   * Contains information about the location of a Telegram Business account.
    */
   export type BusinessLocation = Readonly<{
     address: string; /** Address of the business */
@@ -1030,15 +1132,15 @@ export namespace Telegram {
   }>;
 
   /**
-   *
+   * Describes an interval of time during which a business is open.
    */
   export type BusinessOpeningHoursInterval = Readonly<{
-    opening_minute: number; /** The minute's sequence number in a week, starting on Monday, marking the start of the time interval during which the business is open; 0 - 7  24  60 */
-    closing_minute: number; /** The minute's sequence number in a week, starting on Monday, marking the end of the time interval during which the business is open; 0 - 8  24  60 */
+    opening_minute: number; /** The minute's sequence number in a week, starting on Monday, marking the start of the time interval during which the business is open; 0 - 7 * 24 * 60 */
+    closing_minute: number; /** The minute's sequence number in a week, starting on Monday, marking the end of the time interval during which the business is open; 0 - 8 * 24 * 60 */
   }>;
 
   /**
-   *
+   * Describes the opening hours of a business.
    */
   export type BusinessOpeningHours = Readonly<{
     time_zone_name: string; /** Unique name of the time zone for which the opening hours are defined */
@@ -1294,7 +1396,7 @@ export namespace Telegram {
   export type BusinessMessagesDeleted = Readonly<{
     business_connection_id: string; /** Unique identifier of the business connection */
     chat: Chat; /** Information about a chat in the business account. The bot may not have access to the chat or the corresponding user. */
-    message_ids: ReadonlyArray<number>; /** A JSON-serialized list of identifiers of deleted messages in the chat of the business account */
+    message_ids: ReadonlyArray<number>; /** The list of identifiers of deleted messages in the chat of the business account */
   }>;
 
   /**
@@ -1314,6 +1416,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the photo to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the photo caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     has_spoiler?: boolean; /** Optional. Pass True if the photo needs to be covered with a spoiler animation */
   }>;
 
@@ -1327,6 +1430,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the video to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the video caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     width?: number; /** Optional. Video width */
     height?: number; /** Optional. Video height */
     duration?: number; /** Optional. Video duration in seconds */
@@ -1344,6 +1448,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the animation to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the animation caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     width?: number; /** Optional. Animation width */
     height?: number; /** Optional. Animation height */
     duration?: number; /** Optional. Animation duration in seconds */
@@ -1388,6 +1493,17 @@ export namespace Telegram {
     | MessageOriginHiddenUser
     | MessageOriginChat
     | MessageOriginChannel;
+
+  export type BackgroundFill =
+    | BackgroundFillSolid
+    | BackgroundFillGradient
+    | BackgroundFillFreeformGradient;
+
+  export type BackgroundType =
+    | BackgroundTypeFill
+    | BackgroundTypeWallpaper
+    | BackgroundTypePattern
+    | BackgroundTypeChatTheme;
 
   export type ForumTopicClosed = unknown; /** Currently holds no information. */
 
@@ -1562,6 +1678,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the photo to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the photo caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     reply_markup?: InlineKeyboardMarkup; /** Optional. Inline keyboard attached to the message */
     input_message_content?: InputMessageContent; /** Optional. Content of the message to be sent instead of the photo */
   }>;
@@ -1582,6 +1699,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the GIF file to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     reply_markup?: InlineKeyboardMarkup; /** Optional. Inline keyboard attached to the message */
     input_message_content?: InputMessageContent; /** Optional. Content of the message to be sent instead of the GIF animation */
   }>;
@@ -1602,6 +1720,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the MPEG-4 file to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     reply_markup?: InlineKeyboardMarkup; /** Optional. Inline keyboard attached to the message */
     input_message_content?: InputMessageContent; /** Optional. Content of the message to be sent instead of the video animation */
   }>;
@@ -1619,6 +1738,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the video to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the video caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     video_width?: number; /** Optional. Video width */
     video_height?: number; /** Optional. Video height */
     video_duration?: number; /** Optional. Video duration in seconds */
@@ -1690,7 +1810,7 @@ export namespace Telegram {
     longitude: number; /** Location longitude in degrees */
     title: string; /** Location title */
     horizontal_accuracy?: number; /** Optional. The radius of uncertainty for the location, measured in meters; 0-1500 */
-    live_period?: number; /** Optional. Period in seconds for which the location can be updated, should be between 60 and 86400. */
+    live_period?: number; /** Optional. Period in seconds during which the location can be updated, should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely. */
     heading?: number; /** Optional. For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified. */
     proximity_alert_radius?: number; /** Optional. For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified. */
     reply_markup?: InlineKeyboardMarkup; /** Optional. Inline keyboard attached to the message */
@@ -1760,6 +1880,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the photo to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the photo caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     reply_markup?: InlineKeyboardMarkup; /** Optional. Inline keyboard attached to the message */
     input_message_content?: InputMessageContent; /** Optional. Content of the message to be sent instead of the photo */
   }>;
@@ -1775,6 +1896,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the GIF file to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     reply_markup?: InlineKeyboardMarkup; /** Optional. Inline keyboard attached to the message */
     input_message_content?: InputMessageContent; /** Optional. Content of the message to be sent instead of the GIF animation */
   }>;
@@ -1790,6 +1912,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the MPEG-4 file to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     reply_markup?: InlineKeyboardMarkup; /** Optional. Inline keyboard attached to the message */
     input_message_content?: InputMessageContent; /** Optional. Content of the message to be sent instead of the video animation */
   }>;
@@ -1833,6 +1956,7 @@ export namespace Telegram {
     caption?: string; /** Optional. Caption of the video to be sent, 0-1024 characters after entities parsing */
     parse_mode?: string; /** Optional. Mode for parsing entities in the video caption. See formatting options for more details. */
     caption_entities?: ReadonlyArray<MessageEntity>; /** Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    show_caption_above_media?: boolean; /** Optional. Pass True, if the caption must be shown above the message media */
     reply_markup?: InlineKeyboardMarkup; /** Optional. Inline keyboard attached to the message */
     input_message_content?: InputMessageContent; /** Optional. Content of the message to be sent instead of the video */
   }>;
@@ -1883,7 +2007,7 @@ export namespace Telegram {
     latitude: number; /** Latitude of the location in degrees */
     longitude: number; /** Longitude of the location in degrees */
     horizontal_accuracy?: number; /** Optional. The radius of uncertainty for the location, measured in meters; 0-1500 */
-    live_period?: number; /** Optional. Period in seconds for which the location can be updated, should be between 60 and 86400. */
+    live_period?: number; /** Optional. Period in seconds during which the location can be updated, should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely. */
     heading?: number; /** Optional. For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified. */
     proximity_alert_radius?: number; /** Optional. For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified. */
   }>;
@@ -1919,23 +2043,23 @@ export namespace Telegram {
     title: string; /** Product name, 1-32 characters */
     description: string; /** Product description, 1-255 characters */
     payload: string; /** Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes. */
-    provider_token: string; /** Payment provider token, obtained via @BotFather */
-    currency: string; /** Three-letter ISO 4217 currency code, see more on currencies */
-    prices: ReadonlyArray<LabeledPrice>; /** Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.) */
-    max_tip_amount?: number; /** Optional. The maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0 */
+    provider_token?: string; /** Optional. Payment provider token, obtained via @BotFather. Pass an empty string for payments in Telegram Stars. */
+    currency: string; /** Three-letter ISO 4217 currency code, see more on currencies. Pass “XTR” for payments in Telegram Stars. */
+    prices: ReadonlyArray<LabeledPrice>; /** Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.). Must contain exactly one item for payments in Telegram Stars. */
+    max_tip_amount?: number; /** Optional. The maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0. Not supported for payments in Telegram Stars. */
     suggested_tip_amounts?: ReadonlyArray<number>; /** Optional. A JSON-serialized array of suggested amounts of tip in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount. */
     provider_data?: string; /** Optional. A JSON-serialized object for data about the invoice, which will be shared with the payment provider. A detailed description of the required fields should be provided by the payment provider. */
     photo_url?: string; /** Optional. URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. */
     photo_size?: number; /** Optional. Photo size in bytes */
     photo_width?: number; /** Optional. Photo width */
     photo_height?: number; /** Optional. Photo height */
-    need_name?: boolean; /** Optional. Pass True if you require the user's full name to complete the order */
-    need_phone_number?: boolean; /** Optional. Pass True if you require the user's phone number to complete the order */
-    need_email?: boolean; /** Optional. Pass True if you require the user's email address to complete the order */
-    need_shipping_address?: boolean; /** Optional. Pass True if you require the user's shipping address to complete the order */
-    send_phone_number_to_provider?: boolean; /** Optional. Pass True if the user's phone number should be sent to provider */
-    send_email_to_provider?: boolean; /** Optional. Pass True if the user's email address should be sent to provider */
-    is_flexible?: boolean; /** Optional. Pass True if the final price depends on the shipping method */
+    need_name?: boolean; /** Optional. Pass True if you require the user's full name to complete the order. Ignored for payments in Telegram Stars. */
+    need_phone_number?: boolean; /** Optional. Pass True if you require the user's phone number to complete the order. Ignored for payments in Telegram Stars. */
+    need_email?: boolean; /** Optional. Pass True if you require the user's email address to complete the order. Ignored for payments in Telegram Stars. */
+    need_shipping_address?: boolean; /** Optional. Pass True if you require the user's shipping address to complete the order. Ignored for payments in Telegram Stars. */
+    send_phone_number_to_provider?: boolean; /** Optional. Pass True if the user's phone number should be sent to the provider. Ignored for payments in Telegram Stars. */
+    send_email_to_provider?: boolean; /** Optional. Pass True if the user's email address should be sent to the provider. Ignored for payments in Telegram Stars. */
+    is_flexible?: boolean; /** Optional. Pass True if the final price depends on the shipping method. Ignored for payments in Telegram Stars. */
   }>;
 
   /**
@@ -2003,7 +2127,7 @@ export namespace Telegram {
     title: string; /** Product name */
     description: string; /** Product description */
     start_parameter: string; /** Unique bot deep-linking parameter that can be used to generate this invoice */
-    currency: string; /** Three-letter ISO 4217 currency code */
+    currency: string; /** Three-letter ISO 4217 currency code, or “XTR” for payments in Telegram Stars */
     total_amount: number; /** Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
   }>;
 
@@ -2042,7 +2166,7 @@ export namespace Telegram {
    * This object contains basic information about a successful payment.
    */
   export type SuccessfulPayment = Readonly<{
-    currency: string; /** Three-letter ISO 4217 currency code */
+    currency: string; /** Three-letter ISO 4217 currency code, or “XTR” for payments in Telegram Stars */
     total_amount: number; /** Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
     invoice_payload: string; /** Bot specified invoice payload */
     shipping_option_id?: string; /** Optional. Identifier of the shipping option chosen by the user */
@@ -2067,7 +2191,7 @@ export namespace Telegram {
   export type PreCheckoutQuery = Readonly<{
     id: string; /** Unique query identifier */
     from: User; /** User who sent the query */
-    currency: string; /** Three-letter ISO 4217 currency code */
+    currency: string; /** Three-letter ISO 4217 currency code, or “XTR” for payments in Telegram Stars */
     total_amount: number; /** Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
     invoice_payload: string; /** Bot specified invoice payload */
     shipping_option_id?: string; /** Optional. Identifier of the shipping option chosen by the user */
@@ -2294,8 +2418,9 @@ export namespace Telegram {
       link_preview_options?: LinkPreviewOptions; /** Link preview generation options for the message */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type ForwardMessage = Readonly<{
@@ -2324,10 +2449,11 @@ export namespace Telegram {
       caption?: string; /** New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept */
       parse_mode?: string; /** Mode for parsing entities in the new caption. See formatting options for more details. */
       caption_entities?: ReadonlyArray<MessageEntity>; /** A JSON-serialized list of special entities that appear in the new caption, which can be specified instead of parse_mode */
+      show_caption_above_media?: boolean; /** Pass True, if the caption must be shown above the message media. Ignored if a new caption isn't specified. */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type CopyMessages = Readonly<{
@@ -2348,11 +2474,13 @@ export namespace Telegram {
       caption?: string; /** Photo caption (may also be used when resending photos by file_id), 0-1024 characters after entities parsing */
       parse_mode?: string; /** Mode for parsing entities in the photo caption. See formatting options for more details. */
       caption_entities?: ReadonlyArray<MessageEntity>; /** A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode */
+      show_caption_above_media?: boolean; /** Pass True, if the caption must be shown above the message media */
       has_spoiler?: boolean; /** Pass True if the photo needs to be covered with a spoiler animation */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendAudio = Readonly<{
@@ -2369,8 +2497,9 @@ export namespace Telegram {
       thumbnail?: InputFile | string; /** Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files » */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendDocument = Readonly<{
@@ -2385,8 +2514,9 @@ export namespace Telegram {
       disable_content_type_detection?: boolean; /** Disables automatic server-side content type detection for files uploaded using multipart/form-data */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendVideo = Readonly<{
@@ -2401,12 +2531,14 @@ export namespace Telegram {
       caption?: string; /** Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing */
       parse_mode?: string; /** Mode for parsing entities in the video caption. See formatting options for more details. */
       caption_entities?: ReadonlyArray<MessageEntity>; /** A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode */
+      show_caption_above_media?: boolean; /** Pass True, if the caption must be shown above the message media */
       has_spoiler?: boolean; /** Pass True if the video needs to be covered with a spoiler animation */
       supports_streaming?: boolean; /** Pass True if the uploaded video is suitable for streaming */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendAnimation = Readonly<{
@@ -2421,11 +2553,13 @@ export namespace Telegram {
       caption?: string; /** Animation caption (may also be used when resending animation by file_id), 0-1024 characters after entities parsing */
       parse_mode?: string; /** Mode for parsing entities in the animation caption. See formatting options for more details. */
       caption_entities?: ReadonlyArray<MessageEntity>; /** A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode */
+      show_caption_above_media?: boolean; /** Pass True, if the caption must be shown above the message media */
       has_spoiler?: boolean; /** Pass True if the animation needs to be covered with a spoiler animation */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendVoice = Readonly<{
@@ -2439,8 +2573,9 @@ export namespace Telegram {
       duration?: number; /** Duration of the voice message in seconds */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendVideoNote = Readonly<{
@@ -2453,8 +2588,9 @@ export namespace Telegram {
       thumbnail?: InputFile | string; /** Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files » */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendMediaGroup = Readonly<{
@@ -2464,6 +2600,7 @@ export namespace Telegram {
       media: ReadonlyArray<InputMediaAudio | InputMediaDocument | InputMediaPhoto | InputMediaVideo>; /** A JSON-serialized array describing messages to be sent, must include 2-10 items */
       disable_notification?: boolean; /** Sends messages silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent messages from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
     }>;
 
@@ -2474,13 +2611,14 @@ export namespace Telegram {
       latitude: number; /** Latitude of the location */
       longitude: number; /** Longitude of the location */
       horizontal_accuracy?: number; /** The radius of uncertainty for the location, measured in meters; 0-1500 */
-      live_period?: number; /** Period in seconds for which the location will be updated (see Live Locations, should be between 60 and 86400. */
+      live_period?: number; /** Period in seconds during which the location will be updated (see Live Locations, should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely. */
       heading?: number; /** For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified. */
       proximity_alert_radius?: number; /** For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified. */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendVenue = Readonly<{
@@ -2497,8 +2635,9 @@ export namespace Telegram {
       google_place_type?: string; /** Google Places type of the venue. (See supported types.) */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendContact = Readonly<{
@@ -2511,8 +2650,9 @@ export namespace Telegram {
       vcard?: string; /** Additional data about the contact in the form of a vCard, 0-2048 bytes */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendPoll = Readonly<{
@@ -2520,21 +2660,24 @@ export namespace Telegram {
       chat_id: number | string; /** Unique identifier for the target chat or username of the target channel (in the format @channelusername) */
       message_thread_id?: number; /** Unique identifier for the target message thread (topic) of the forum; for forum supergroups only */
       question: string; /** Poll question, 1-300 characters */
-      options: ReadonlyArray<string>; /** A JSON-serialized list of answer options, 2-10 strings 1-100 characters each */
+      question_parse_mode?: string; /** Mode for parsing entities in the question. See formatting options for more details. Currently, only custom emoji entities are allowed */
+      question_entities?: ReadonlyArray<MessageEntity>; /** A JSON-serialized list of special entities that appear in the poll question. It can be specified instead of question_parse_mode */
+      options: ReadonlyArray<InputPollOption>; /** A JSON-serialized list of 2-10 answer options */
       is_anonymous?: boolean; /** True, if the poll needs to be anonymous, defaults to True */
       type?: string; /** Poll type, “quiz” or “regular”, defaults to “regular” */
       allows_multiple_answers?: boolean; /** True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False */
       correct_option_id?: number; /** 0-based identifier of the correct answer option, required for polls in quiz mode */
       explanation?: string; /** Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing */
       explanation_parse_mode?: string; /** Mode for parsing entities in the explanation. See formatting options for more details. */
-      explanation_entities?: ReadonlyArray<MessageEntity>; /** A JSON-serialized list of special entities that appear in the poll explanation, which can be specified instead of parse_mode */
+      explanation_entities?: ReadonlyArray<MessageEntity>; /** A JSON-serialized list of special entities that appear in the poll explanation. It can be specified instead of explanation_parse_mode */
       open_period?: number; /** Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with close_date. */
       close_date?: number; /** Point in time (Unix timestamp) when the poll will be automatically closed. Must be at least 5 and no more than 600 seconds in the future. Can't be used together with open_period. */
       is_closed?: boolean; /** Pass True if the poll needs to be immediately closed. This can be useful for poll preview. */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendDice = Readonly<{
@@ -2544,8 +2687,9 @@ export namespace Telegram {
       emoji?: string; /** Emoji on which the dice throw animation is based. Currently, must be one of “”, “”, “”, “”, “”, or “”. Dice can have values 1-6 for “”, “” and “”, values 1-5 for “” and “”, and values 1-64 for “”. Defaults to “” */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type SendChatAction = Readonly<{
@@ -2605,7 +2749,7 @@ export namespace Telegram {
       can_change_info?: boolean; /** Pass True if the administrator can change chat title, photo and other settings */
       can_invite_users?: boolean; /** Pass True if the administrator can invite new users to the chat */
       can_post_stories?: boolean; /** Pass True if the administrator can post stories to the chat */
-      can_edit_stories?: boolean; /** Pass True if the administrator can edit stories posted by other users */
+      can_edit_stories?: boolean; /** Pass True if the administrator can edit stories posted by other users, post stories to the chat page, pin chat stories, and access the chat's story archive */
       can_delete_stories?: boolean; /** Pass True if the administrator can delete stories posted by other users */
       can_post_messages?: boolean; /** Pass True if the administrator can post messages in the channel, or access channel statistics; for channels only */
       can_edit_messages?: boolean; /** Pass True if the administrator can edit messages of other users and can pin messages; for channels only */
@@ -2890,6 +3034,7 @@ export namespace Telegram {
       caption?: string; /** New caption of the message, 0-1024 characters after entities parsing */
       parse_mode?: string; /** Mode for parsing entities in the message caption. See formatting options for more details. */
       caption_entities?: ReadonlyArray<MessageEntity>; /** A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode */
+      show_caption_above_media?: boolean; /** Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages. */
       reply_markup?: InlineKeyboardMarkup; /** A JSON-serialized object for an inline keyboard. */
     }>;
 
@@ -2907,6 +3052,7 @@ export namespace Telegram {
       inline_message_id?: string; /** Required if chat_id and message_id are not specified. Identifier of the inline message */
       latitude: number; /** Latitude of new location */
       longitude: number; /** Longitude of new location */
+      live_period?: number; /** New period in seconds during which the location can be updated, starting from the message send date. If 0x7FFFFFFF is specified, then the location can be updated forever. Otherwise, the new value must not exceed the current live_period by more than a day, and the live location expiration date must remain within the next 90 days. If not specified, then live_period remains unchanged */
       horizontal_accuracy?: number; /** The radius of uncertainty for the location, measured in meters; 0-1500 */
       heading?: number; /** Direction in which the user is moving, in degrees. Must be between 1 and 360 if specified. */
       proximity_alert_radius?: number; /** The maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified. */
@@ -2951,8 +3097,9 @@ export namespace Telegram {
       emoji?: string; /** Emoji associated with the sticker; only for just uploaded stickers */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account. */
+      reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply; /** Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     }>;
 
     export type GetStickerSet = Readonly<{
@@ -3056,10 +3203,10 @@ export namespace Telegram {
       title: string; /** Product name, 1-32 characters */
       description: string; /** Product description, 1-255 characters */
       payload: string; /** Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes. */
-      provider_token: string; /** Payment provider token, obtained via @BotFather */
-      currency: string; /** Three-letter ISO 4217 currency code, see more on currencies */
-      prices: ReadonlyArray<LabeledPrice>; /** Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.) */
-      max_tip_amount?: number; /** The maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0 */
+      provider_token?: string; /** Payment provider token, obtained via @BotFather. Pass an empty string for payments in Telegram Stars. */
+      currency: string; /** Three-letter ISO 4217 currency code, see more on currencies. Pass “XTR” for payments in Telegram Stars. */
+      prices: ReadonlyArray<LabeledPrice>; /** Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.). Must contain exactly one item for payments in Telegram Stars. */
+      max_tip_amount?: number; /** The maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0. Not supported for payments in Telegram Stars. */
       suggested_tip_amounts?: ReadonlyArray<number>; /** A JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount. */
       start_parameter?: string; /** Unique deep-linking parameter. If left empty, forwarded copies of the sent message will have a Pay button, allowing multiple users to pay directly from the forwarded message, using the same invoice. If non-empty, forwarded copies of the sent message will have a URL button with a deep link to the bot (instead of a Pay button), with the value used as the start parameter */
       provider_data?: string; /** JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider. */
@@ -3067,15 +3214,16 @@ export namespace Telegram {
       photo_size?: number; /** Photo size in bytes */
       photo_width?: number; /** Photo width */
       photo_height?: number; /** Photo height */
-      need_name?: boolean; /** Pass True if you require the user's full name to complete the order */
-      need_phone_number?: boolean; /** Pass True if you require the user's phone number to complete the order */
-      need_email?: boolean; /** Pass True if you require the user's email address to complete the order */
-      need_shipping_address?: boolean; /** Pass True if you require the user's shipping address to complete the order */
-      send_phone_number_to_provider?: boolean; /** Pass True if the user's phone number should be sent to provider */
-      send_email_to_provider?: boolean; /** Pass True if the user's email address should be sent to provider */
-      is_flexible?: boolean; /** Pass True if the final price depends on the shipping method */
+      need_name?: boolean; /** Pass True if you require the user's full name to complete the order. Ignored for payments in Telegram Stars. */
+      need_phone_number?: boolean; /** Pass True if you require the user's phone number to complete the order. Ignored for payments in Telegram Stars. */
+      need_email?: boolean; /** Pass True if you require the user's email address to complete the order. Ignored for payments in Telegram Stars. */
+      need_shipping_address?: boolean; /** Pass True if you require the user's shipping address to complete the order. Ignored for payments in Telegram Stars. */
+      send_phone_number_to_provider?: boolean; /** Pass True if the user's phone number should be sent to the provider. Ignored for payments in Telegram Stars. */
+      send_email_to_provider?: boolean; /** Pass True if the user's email address should be sent to the provider. Ignored for payments in Telegram Stars. */
+      is_flexible?: boolean; /** Pass True if the final price depends on the shipping method. Ignored for payments in Telegram Stars. */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
       reply_markup?: InlineKeyboardMarkup; /** A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button. */
     }>;
@@ -3084,23 +3232,23 @@ export namespace Telegram {
       title: string; /** Product name, 1-32 characters */
       description: string; /** Product description, 1-255 characters */
       payload: string; /** Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes. */
-      provider_token: string; /** Payment provider token, obtained via BotFather */
-      currency: string; /** Three-letter ISO 4217 currency code, see more on currencies */
-      prices: ReadonlyArray<LabeledPrice>; /** Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.) */
-      max_tip_amount?: number; /** The maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0 */
+      provider_token?: string; /** Payment provider token, obtained via @BotFather. Pass an empty string for payments in Telegram Stars. */
+      currency: string; /** Three-letter ISO 4217 currency code, see more on currencies. Pass “XTR” for payments in Telegram Stars. */
+      prices: ReadonlyArray<LabeledPrice>; /** Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.). Must contain exactly one item for payments in Telegram Stars. */
+      max_tip_amount?: number; /** The maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0. Not supported for payments in Telegram Stars. */
       suggested_tip_amounts?: ReadonlyArray<number>; /** A JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount. */
       provider_data?: string; /** JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider. */
       photo_url?: string; /** URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. */
       photo_size?: number; /** Photo size in bytes */
       photo_width?: number; /** Photo width */
       photo_height?: number; /** Photo height */
-      need_name?: boolean; /** Pass True if you require the user's full name to complete the order */
-      need_phone_number?: boolean; /** Pass True if you require the user's phone number to complete the order */
-      need_email?: boolean; /** Pass True if you require the user's email address to complete the order */
-      need_shipping_address?: boolean; /** Pass True if you require the user's shipping address to complete the order */
-      send_phone_number_to_provider?: boolean; /** Pass True if the user's phone number should be sent to the provider */
-      send_email_to_provider?: boolean; /** Pass True if the user's email address should be sent to the provider */
-      is_flexible?: boolean; /** Pass True if the final price depends on the shipping method */
+      need_name?: boolean; /** Pass True if you require the user's full name to complete the order. Ignored for payments in Telegram Stars. */
+      need_phone_number?: boolean; /** Pass True if you require the user's phone number to complete the order. Ignored for payments in Telegram Stars. */
+      need_email?: boolean; /** Pass True if you require the user's email address to complete the order. Ignored for payments in Telegram Stars. */
+      need_shipping_address?: boolean; /** Pass True if you require the user's shipping address to complete the order. Ignored for payments in Telegram Stars. */
+      send_phone_number_to_provider?: boolean; /** Pass True if the user's phone number should be sent to the provider. Ignored for payments in Telegram Stars. */
+      send_email_to_provider?: boolean; /** Pass True if the user's email address should be sent to the provider. Ignored for payments in Telegram Stars. */
+      is_flexible?: boolean; /** Pass True if the final price depends on the shipping method. Ignored for payments in Telegram Stars. */
     }>;
 
     export type AnswerShippingQuery = Readonly<{
@@ -3116,6 +3264,11 @@ export namespace Telegram {
       error_message?: string; /** Required if ok is False. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. "Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!"). Telegram will display this message to the user. */
     }>;
 
+    export type RefundStarPayment = Readonly<{
+      user_id: number; /** Identifier of the user whose payment will be refunded */
+      telegram_payment_charge_id: string; /** Telegram payment identifier */
+    }>;
+
     export type SetPassportDataErrors = Readonly<{
       user_id: number; /** User identifier */
       errors: ReadonlyArray<PassportElementError>; /** A JSON-serialized array describing the errors */
@@ -3128,8 +3281,9 @@ export namespace Telegram {
       game_short_name: string; /** Short name of the game, serves as the unique identifier for the game. Set up your games via @BotFather. */
       disable_notification?: boolean; /** Sends the message silently. Users will receive a notification with no sound. */
       protect_content?: boolean; /** Protects the contents of the sent message from forwarding and saving */
+      message_effect_id?: string; /** Unique identifier of the message effect to be added to the message; for private chats only */
       reply_parameters?: ReplyParameters; /** Description of the message to reply to */
-      reply_markup?: InlineKeyboardMarkup; /** A JSON-serialized object for an inline keyboard. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game. Not supported for messages sent on behalf of a business account. */
+      reply_markup?: InlineKeyboardMarkup; /** A JSON-serialized object for an inline keyboard. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game. */
     }>;
 
     export type SetGameScore = Readonly<{
@@ -3243,7 +3397,7 @@ export namespace Telegram {
     sendAnimation(params: Telegram.Params.SendAnimation): ITelegramResponse;
 
     /**
-     * Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS (other formats may be sent as Audio or Document). On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
+     * Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS, or in .MP3 format, or in .M4A format (other formats may be sent as Audio or Document). On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
      */
     sendVoice(params: Telegram.Params.SendVoice): ITelegramResponse;
 
@@ -3413,7 +3567,7 @@ export namespace Telegram {
     leaveChat(params: Telegram.Params.LeaveChat): ITelegramResponse<true>;
 
     /**
-     * Use this method to get up to date information about the chat. Returns a Chat object on success.
+     * Use this method to get up-to-date information about the chat. Returns a ChatFullInfo object on success.
      */
     getChat(params: Telegram.Params.GetChat): ITelegramResponse;
 
@@ -3736,6 +3890,11 @@ export namespace Telegram {
      * Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an Update with the field pre_checkout_query. Use this method to respond to such pre-checkout queries. On success, True is returned. Note: The Bot API must receive an answer within 10 seconds after the pre-checkout query was sent.
      */
     answerPreCheckoutQuery(params: Telegram.Params.AnswerPreCheckoutQuery): ITelegramResponse;
+
+    /**
+     * Refunds a successful payment in Telegram Stars. Returns True on success.
+     */
+    refundStarPayment(params: Telegram.Params.RefundStarPayment): ITelegramResponse<true>;
 
     /**
      * Informs a user that some of the Telegram Passport elements they provided contains errors. The user will not be able to re-submit their Passport to you until the errors are fixed (the contents of the field for which you returned the error must change). Returns True on success.
