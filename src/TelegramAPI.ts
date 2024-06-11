@@ -1,6 +1,6 @@
 import * as https from 'https';
 import { RequestOptions } from 'https';
-const request = require('request');
+import * as FormData from 'form-data';
 
 import { ITelegramResponse, ITelegramResponseData, Telegram } from './types';
 
@@ -603,50 +603,73 @@ export class TelegramAPI implements Telegram.Bot {
       throw new Error('Unexpected error: params must exist');
     }
 
-    return new Promise((resolve, reject) => {
-      // TODO: drop request and use not deprecated lib
-      request({
-        url: `https://api.telegram.org/bot${this.botId}/${endpoint}`,
-        method: 'POST',
-        formData: {
-          ...params,
-          // TODO: not best solution
-          [fileField]: this._formatFile(params[fileField as string]),
-        },
-      }, (err, resp, body) => {
-        let parsedBody;
+    const form = new FormData();
 
-        try {
-          parsedBody = JSON.parse(body);
-        } catch (e) {
-          console.error(e);
-          return reject(e);
-        }
+    for (const [key, value] of Object.entries(params)) {
+      if (key === fileField) {
+        const inputFile = value as Telegram.InputFile;
+        form.append(key, inputFile.file, {
+          filename: inputFile.name ?? 'victory',
+        });
+        continue;
+      }
 
-        if (err || !parsedBody.ok) {
-          console.error(err || parsedBody)
-          return reject(err || parsedBody);
-        }
+      if (typeof value === 'object' || Array.isArray(value)) {
+        form.append(key, JSON.stringify(value));
+        continue;
+      }
 
-        return resolve(parsedBody);
+      form.append(key, value);
+    }
+
+    const options: RequestOptions = {
+      hostname: 'api.telegram.org',
+      port: 443,
+      path: `/bot${this.botId}/${endpoint}`,
+      method: 'POST',
+      headers: form.getHeaders(),
+    };
+
+    return new Promise<ITelegramResponseData<ResponseT>>((resolve, reject) => {
+      const req = https.request(options, (res) => {
+        res.setEncoding('utf8');
+        let fullData = '';
+        res
+          .on('data', (chunk: any) => {
+            fullData += chunk;
+          })
+          .on('end', (a) => {
+            try {
+              let result = JSON.parse(fullData);
+
+              if (!!result && !result.ok) {
+                return reject({
+                  ok: result.ok,
+                  code: result.error_code,
+                  description: result.description
+                })
+              }
+              return resolve(result);
+            } catch (e) {
+              console.error(e);
+              return reject(e);
+            }
+          });
       });
+
+      req.on('error', (e) => {
+        return reject(e);
+      });
+
+      try {
+        if (params != null) {
+          req.write(JSON.stringify(params));
+        }
+      } catch (e) {
+        return reject(e);
+      }
+
+      form.pipe(req);
     });
   }
-
-  // make file format suitable for request lib
-  private _formatFile(input: Telegram.InputFile): FormattedInputFile {
-    return {
-      value: input.file,
-      options: {
-        filename: input.name ?? 'victory',
-      }
-    }
-  }
 }
-
-type FormattedInputFile = Readonly<{
-  value: Buffer;
-  options: Readonly<{
-    filename: string;
-  }>;
-}>;
