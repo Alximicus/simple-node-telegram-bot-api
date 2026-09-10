@@ -1,6 +1,5 @@
-import * as https from 'https';
-import { RequestOptions } from 'https';
-import * as FormData from 'form-data';
+import https = require('node:https');
+import type { RequestOptions } from 'node:https';
 
 import { ITelegramResponse, ITelegramResponseData, Telegram } from './types';
 
@@ -590,7 +589,7 @@ export class TelegramAPI implements Telegram.Bot {
     });
   }
 
-  private _sendForm<
+  private async _sendForm<
     ResponseT extends {},
     K extends keyof Telegram.Bot,
     ParamsT extends Parameters<Telegram.Bot[K]>[0], // all methods have a single object parameter
@@ -604,72 +603,54 @@ export class TelegramAPI implements Telegram.Bot {
     }
 
     const form = new FormData();
-
     for (const [key, value] of Object.entries(params)) {
+      if (value == null) continue;
       if (key === fileField) {
-        const inputFile = value as Telegram.InputFile;
-        form.append(key, inputFile.file, {
-          filename: inputFile.name ?? 'victory',
-        });
-        continue;
+        const input = value as Telegram.InputFile;
+        form.append(key, new Blob([new Uint8Array(input.file)]), input.name ?? 'victory');
+      } else {
+        form.append(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
       }
-
-      if (typeof value === 'object' || Array.isArray(value)) {
-        form.append(key, JSON.stringify(value));
-        continue;
-      }
-
-      form.append(key, value);
     }
 
-    const options: RequestOptions = {
-      hostname: 'api.telegram.org',
-      port: 443,
-      path: `/bot${this.botId}/${endpoint}`,
-      method: 'POST',
-      headers: form.getHeaders(),
-    };
-
-    return new Promise<ITelegramResponseData<ResponseT>>((resolve, reject) => {
-      const req = https.request(options, (res) => {
+    // Let Node serialize and escape multipart fields, including the boundary.
+    const encoded = new Response(form);
+    const body = Buffer.from(await encoded.arrayBuffer());
+    return new Promise((resolve, reject) => {
+      const req = https.request({
+        hostname: 'api.telegram.org',
+        port: 443,
+        path: `/bot${this.botId}/${endpoint}`,
+        method: 'POST',
+        headers: {
+          'Content-Type': encoded.headers.get('content-type')!,
+          'Content-Length': body.length,
+        },
+      }, (res) => {
         res.setEncoding('utf8');
-        let fullData = '';
-        res
-          .on('data', (chunk: any) => {
-            fullData += chunk;
-          })
-          .on('end', (a) => {
-            try {
-              let result = JSON.parse(fullData);
-
-              if (!!result && !result.ok) {
-                return reject({
-                  ok: result.ok,
-                  code: result.error_code,
-                  description: result.description
-                })
-              }
-              return resolve(result);
-            } catch (e) {
-              console.error(e);
-              return reject(e);
+        let data = '';
+        res.on('data', (chunk: string) => { data += chunk; });
+        res.on('error', reject);
+        res.on('aborted', () => reject(new Error('Response aborted')));
+        res.on('end', () => {
+          try {
+            const parsedBody = JSON.parse(data);
+            // Preserve the existing multipart API error shape.
+            if (!!parsedBody && !parsedBody.ok) {
+              return reject({
+                ok: parsedBody.ok,
+                code: parsedBody.error_code,
+                description: parsedBody.description,
+              });
             }
-          });
+            resolve(parsedBody);
+          } catch (error) {
+            reject(error);
+          }
+        });
       });
-
-      req.on('error', (e) => {
-        return reject(e);
-      });
-
-      try {
-        if (params != null) {
-          req.write(JSON.stringify(params));
-        }
-      } catch (e) {
-        return reject(e);
-      }
-
-      form.pipe(req);
+      req.on('error', reject);
+      req.end(body);
     });
   }
 }

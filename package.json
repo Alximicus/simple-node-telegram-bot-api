@@ -20,21 +20,23 @@
   ],
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "test": "npm run test:types && node --test test/*.test.cjs",
+    "test:types": "npm run build && tsc -p test/tsconfig.json"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:Alximicus/simple-node-telegram-bot-api.git"
   },
-  "dependencies": {
-    "form-data": "4.0.0"
-  },
   "bugs": {
     "url": "https://github.com/Alximicus/simple-node-telegram-bot-api/issues"
   },
   "devDependencies": {
-    "@types/node": "16.11.10",
-    "typescript": "4.8.4"
+    "@types/node": "22.20.2",
+    "typescript": "7.0.2"
   },
-  "homepage": "https://github.com/Alximicus/simple-node-telegram-bot-api"
+  "homepage": "https://github.com/Alximicus/simple-node-telegram-bot-api",
+  "engines": {
+    "node": ">=22"
+  }
 }

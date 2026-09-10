@@ -4,15 +4,16 @@
     "strictNullChecks": true,
     "target": "es6",
     "outDir": "lib",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "strict": false,
+    "types": ["node"],
     "sourceMap": true,
     "removeComments": false,
     "lib": [
       "es2015",
     ],
-    "rootDir": "src",
-    "baseUrl": "./src/"
+    "rootDir": "src"
   },
   "include": [
     "src"

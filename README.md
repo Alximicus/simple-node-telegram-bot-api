@@ -33,6 +33,12 @@ myTgAPI.sendMessage({
 });
 ```
 
+## Requirements
+
+Node.js 22 or newer is required. The package uses native Node.js HTTPS and multipart APIs and has no runtime dependencies.
+
+The package ships compiled CommonJS JavaScript and TypeScript declarations. TypeScript 7 is used only to build the package; consumers do not need to upgrade to it. The declarations have been checked with TypeScript 5.0.4 and 5.9.3, with `skipLibCheck` disabled. TypeScript projects need a version of `@types/node` compatible with their compiler because `InputFile` uses `Buffer`.
+
 ## Installation
 
 NPM:
@@ -42,6 +48,17 @@ NPM:
 Yarn:
 
 `yarn add @alximicus/simple-node-telegram-bot-api`
+
+## Development
+
+Use Node.js 22, then run:
+
+```sh
+npm ci
+npm test
+```
+
+Tests use the built-in Node.js test runner and mock HTTPS; they do not send Telegram requests. `npm run test:types` builds the package and checks `test/consumer.ts` against the generated declarations. The test configuration maps the package name to `lib/index.d.ts` for local checks and editor support. To check a different TypeScript version against the packed package, copy the fixture into a separate consumer project with that package installed.
 
 ## License
 
