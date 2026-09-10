@@ -39,6 +39,16 @@ Node.js 22 or newer is required. The package uses native Node.js HTTPS and multi
 
 The package ships compiled CommonJS JavaScript and TypeScript declarations. TypeScript 7 is used only to build the package; consumers do not need to upgrade to it. The declarations have been checked with TypeScript 5.0.4 and 5.9.3, with `skipLibCheck` disabled. TypeScript projects need a version of `@types/node` compatible with their compiler because `InputFile` uses `Buffer`.
 
+## Request timeouts
+
+Requests have a 60-second client deadline by default. You can set it in milliseconds:
+
+```ts
+const api = new TelegramAPI('your_bot_token', 120_000);
+```
+
+For `getUpdates`, the deadline is at least the requested Telegram long-poll timeout plus 15 seconds. Expired requests are destroyed and reject with `code: 'ETIMEDOUT'`. Interrupted responses also reject so callers can retry. Requests are not automatically retried by this API layer, because retrying a write operation may duplicate its effect. API errors retain Telegram's `parameters`, including `retry_after` when supplied.
+
 ## Installation
 
 NPM:

@@ -6,7 +6,11 @@ import { ITelegramResponse, ITelegramResponseData, Telegram } from './types';
 export class TelegramAPI implements Telegram.Bot {
   constructor(
     readonly botId: string,
+    private readonly requestTimeoutMs: number = 60000,
   ) {
+    if (!Number.isFinite(requestTimeoutMs) || requestTimeoutMs <= 0 || requestTimeoutMs > 2147483647) {
+      throw new RangeError('requestTimeoutMs must be between 1 and 2147483647');
+    }
   }
 
   addStickerToSet(params: Telegram.Params.AddStickerToSet): ITelegramResponse<true> {
@@ -817,57 +821,18 @@ export class TelegramAPI implements Telegram.Bot {
     endpoint: K,
     params?: ParamsT,
   ): ITelegramResponse<ResponseT> {
-    const options: RequestOptions = {
-      hostname: 'api.telegram.org',
-      port: 443,
-      path: `/bot${this.botId}/${endpoint}`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
-    return new Promise<ITelegramResponseData<ResponseT>>((resolve, reject) => {
-      const req = https.request(options, (res) => {
-        res.setEncoding('utf8');
-        let fullData = '';
-        res
-          .on('data', (chunk: any) => {
-            fullData += chunk;
-          })
-          .on('end', (a) => {
-            try {
-              let result = JSON.parse(fullData);
-
-              if (!!result && !result.ok) {
-                return reject({
-                  ok: result.ok,
-                  code: result.error_code,
-                  description: result.description
-                })
-              }
-              return resolve(result);
-            } catch (e) {
-              console.error(e);
-              return reject(e);
-            }
-          });
-      });
-
-      req.on('error', (e) => {
-        return reject(e);
-      });
-
-      try {
-        if (params != null) {
-          req.write(JSON.stringify(params));
-        }
-      } catch (e) {
-        return reject(e);
-      }
-
-      req.end();
-    });
+    let body: string | undefined;
+    try {
+      body = params == null ? undefined : JSON.stringify(params);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+    const pollTimeout = endpoint === 'getUpdates' ? Number((params as Telegram.Params.GetUpdates | undefined)?.timeout ?? 0) : 0;
+    const deadline = endpoint === 'getUpdates' ? Math.max(this.requestTimeoutMs, pollTimeout * 1000 + 15000) : this.requestTimeoutMs;
+    if (!Number.isFinite(deadline) || deadline > 2147483647) {
+      return Promise.reject(new RangeError('Invalid getUpdates timeout'));
+    }
+    return this._request(endpoint, body, { 'Content-Type': 'application/json' }, deadline);
   }
 
   private async _sendForm<
@@ -897,41 +862,78 @@ export class TelegramAPI implements Telegram.Bot {
     // Let Node serialize and escape multipart fields, including the boundary.
     const encoded = new Response(form);
     const body = Buffer.from(await encoded.arrayBuffer());
+    return this._request(endpoint, body, {
+      'Content-Type': encoded.headers.get('content-type')!,
+      'Content-Length': body.length,
+    }, this.requestTimeoutMs);
+  }
+
+  private _request<ResponseT>(
+    endpoint: keyof Telegram.Bot,
+    body: string | Buffer | undefined,
+    headers: RequestOptions['headers'],
+    deadline: number,
+  ): ITelegramResponse<ResponseT> {
     return new Promise((resolve, reject) => {
-      const req = https.request({
-        hostname: 'api.telegram.org',
-        port: 443,
-        path: `/bot${this.botId}/${endpoint}`,
-        method: 'POST',
-        headers: {
-          'Content-Type': encoded.headers.get('content-type')!,
-          'Content-Length': body.length,
-        },
-      }, (res) => {
-        res.setEncoding('utf8');
-        let data = '';
-        res.on('data', (chunk: string) => { data += chunk; });
-        res.on('error', reject);
-        res.on('aborted', () => reject(new Error('Response aborted')));
-        res.on('end', () => {
-          try {
-            const parsedBody = JSON.parse(data);
-            // Preserve the existing multipart API error shape.
-            if (!!parsedBody && !parsedBody.ok) {
-              return reject({
-                ok: parsedBody.ok,
-                code: parsedBody.error_code,
-                description: parsedBody.description,
-              });
+      let settled = false;
+      let req: ReturnType<typeof https.request> | undefined;
+      const finish = (error?: unknown, result?: ITelegramResponseData<ResponseT>) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        if (error !== undefined) reject(error);
+        else resolve(result!);
+      };
+      const fail = (error: Error) => {
+        finish(error);
+        req?.destroy(error);
+      };
+      // A wall-clock deadline covers DNS, TLS, headers and the entire response body.
+      const timer = setTimeout(() => {
+        fail(Object.assign(new Error(`Telegram ${endpoint} exceeded ${deadline}ms`), { code: 'ETIMEDOUT' }));
+      }, deadline);
+      try {
+        req = https.request({
+          hostname: 'api.telegram.org', port: 443,
+          path: `/bot${this.botId}/${endpoint}`, method: 'POST', headers,
+        }, (res) => {
+          res.setEncoding('utf8');
+          let data = '';
+          let ended = false;
+          res.on('data', (chunk: string) => { data += chunk; });
+          res.on('error', fail);
+          res.on('aborted', () => fail(new Error('Telegram response aborted')));
+          res.on('close', () => {
+            if (!ended && !settled) fail(new Error('Telegram response closed before completion'));
+          });
+          res.on('end', () => {
+            ended = true;
+            if (settled) return;
+            try {
+              const parsed = JSON.parse(data);
+              if (!parsed || typeof parsed.ok !== 'boolean') throw new Error('Invalid Telegram response');
+              if (!parsed.ok) {
+                const error = { ok: parsed.ok, code: parsed.error_code, description: parsed.description };
+                // Preserve existing error fields and retain retry_after for rate-limit recovery.
+                if (parsed.parameters) Object.assign(error, { parameters: parsed.parameters });
+                finish(error);
+              } else {
+                finish(undefined, parsed);
+              }
+            } catch (error) {
+              finish(error);
             }
-            resolve(parsedBody);
-          } catch (error) {
-            reject(error);
-          }
+          });
         });
-      });
-      req.on('error', reject);
-      req.end(body);
+        req.on('error', (error) => finish(error));
+        req.on('close', () => {
+          if (!settled) finish(new Error('Telegram request closed before completion'));
+        });
+        req.end(body);
+      } catch (error) {
+        finish(error);
+        req?.destroy();
+      }
     });
   }
 }

@@ -12,6 +12,7 @@ function intercept(reply = { ok: true, result: { message_id: 1 } }, failure) {
   https.request = (options, callback) => {
     sent.options = options;
     const req = new EventEmitter();
+    req.destroy = () => { sent.destroyed = true; };
     req.write = (body) => { sent.body = body; };
     req.end = (body) => {
       if (body !== undefined) sent.body = body;
@@ -87,9 +88,9 @@ test('API error shapes stay compatible for JSON and multipart', async () => {
   const error = { ok: false, error_code: 400, description: 'Bad Request', parameters: { retry_after: 1 } };
   intercept(error);
   await assert.rejects(api.sendMessage({ chat_id: 42, text: 'test' }),
-    (e) => { assert.deepEqual(e, { ok: false, code: 400, description: 'Bad Request' }); return true; });
+    (e) => { assert.deepEqual(e, { ok: false, code: 400, description: 'Bad Request', parameters: { retry_after: 1 } }); return true; });
   await assert.rejects(api.sendPhoto({ chat_id: 42, photo: file }),
-    (e) => { assert.deepEqual(e, { ok: false, code: 400, description: 'Bad Request' }); return true; });
+    (e) => { assert.deepEqual(e, { ok: false, code: 400, description: 'Bad Request', parameters: { retry_after: 1 } }); return true; });
 });
 
 for (const failure of ['request', 'response', 'aborted']) {
@@ -102,4 +103,83 @@ for (const failure of ['request', 'response', 'aborted']) {
 test('multipart rejects invalid JSON', async () => {
   intercept('not JSON');
   await assert.rejects(api.sendPhoto({ chat_id: 42, photo: file }), SyntaxError);
+});
+
+function stalledRequest(respond) {
+  const state = { destroyed: false, calls: 0 };
+  https.request = (options, callback) => {
+    state.calls++;
+    const req = new EventEmitter();
+    req.destroy = (error) => {
+      state.destroyed = true;
+      if (error) req.emit('error', error);
+      req.emit('close');
+    };
+    req.end = () => {
+      if (!respond) return;
+      const res = new EventEmitter();
+      res.setEncoding = () => {};
+      callback(res);
+      respond(res, req);
+    };
+    return req;
+  };
+  return state;
+}
+
+test('stalled JSON request is rejected and destroyed at its deadline', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const state = stalledRequest();
+  const promise = new TelegramAPI('dummy', 25).getMe();
+  const rejection = assert.rejects(promise, { code: 'ETIMEDOUT' });
+  t.mock.timers.tick(25);
+  await rejection;
+  assert.equal(state.destroyed, true);
+});
+
+test('long polling deadline includes Telegram timeout plus network margin', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const state = stalledRequest();
+  const promise = new TelegramAPI('dummy', 25).getUpdates({ timeout: 30 });
+  const rejection = assert.rejects(promise, { code: 'ETIMEDOUT' });
+  t.mock.timers.tick(44999);
+  assert.equal(state.destroyed, false);
+  t.mock.timers.tick(1);
+  await rejection;
+  assert.equal(state.destroyed, true);
+});
+
+for (const event of ['aborted', 'close', 'error']) {
+  test(`partial JSON response rejects on ${event}`, async () => {
+    stalledRequest((res) => { res.emit('data', '{"ok":'); res.emit(event, new Error('response failure')); });
+    await assert.rejects(new TelegramAPI('dummy').getMe(), /aborted|closed|failure/);
+  });
+}
+
+test('successful requests clear their deadline and ignore normal close events', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const state = stalledRequest((res, req) => {
+    res.emit('data', '{"ok":true,"result":true}');
+    res.emit('end'); res.emit('close'); req.emit('close');
+  });
+  assert.deepEqual(await new TelegramAPI('dummy', 25).getMe(), { ok: true, result: true });
+  t.mock.timers.tick(1000);
+  assert.equal(state.destroyed, false);
+});
+
+test('serialization failure creates no network request', async () => {
+  const state = stalledRequest();
+  const params = { chat_id: 42 }; params.text = params;
+  await assert.rejects(new TelegramAPI('dummy').sendMessage(params), TypeError);
+  assert.equal(state.calls, 0);
+});
+
+test('multipart shares the request deadline and destroys a stalled upload', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const state = stalledRequest();
+  const rejected = assert.rejects(new TelegramAPI('dummy', 25).sendPhoto({ chat_id: 42, photo: file }), { code: 'ETIMEDOUT' });
+  await new Promise(setImmediate);
+  t.mock.timers.tick(25);
+  await rejected;
+  assert.equal(state.destroyed, true);
 });
