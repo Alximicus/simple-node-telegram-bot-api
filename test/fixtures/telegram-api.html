@@ -1,0 +1,40 @@
+<!doctype html>
+<html><body>
+<h3>Recent changes</h3><h4>May 28, 2024</h4><p><strong>Bot API 7.4</strong></p>
+<h3>Available types</h3>
+<h4>User</h4><p>A user.</p>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>id</td><td>Integer</td><td>User ID.</td></tr></tbody></table>
+<h4>Message</h4><p>A message with &lt;markup&gt; and a comment terminator */.</p>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>message_id</td><td>Integer</td><td>Message ID.</td></tr>
+<tr><td>from</td><td>User</td><td>Optional. Sender.</td></tr>
+<tr><td>photos</td><td>Array of Array of String</td><td>Optional. Photos.</td></tr>
+</tbody></table>
+<h4>InaccessibleMessage</h4><p>An inaccessible message.</p>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>date</td><td>Integer</td><td>Always 0.</td></tr></tbody></table>
+<h4>MaybeInaccessibleMessage</h4><p>It can be one of:</p><p>A paragraph between the description and the list.</p>
+<ul><li><a href="#message">Message</a></li><li><a href="#inaccessiblemessage">InaccessibleMessage</a></li></ul>
+<h4>ForumTopicClosed</h4><p>Currently holds no information.</p>
+<h4>CallbackGame</h4><p>A placeholder, currently holds no information.</p>
+<h4>InputFile</h4><p>File contents uploaded using multipart/form-data.</p>
+<h4>RichText</h4><p>Either a String, an Array of RichText, or one of:</p><ul><li>RichTextBold</li></ul>
+<h4>RichTextBold</h4><p>Bold text.</p>
+<table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td>text</td><td>RichText</td><td>The text.</td></tr></tbody></table>
+<h3>Available methods</h3>
+<h4>getMe</h4><p>Requires no parameters. Returns a User object.</p>
+<h4>sendPhoto</h4><p>On success, the sent Message is returned.</p>
+<table><thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+<tr><td>chat_id</td><td>Integer or String</td><td>Yes</td><td>Destination.</td></tr>
+<tr><td>photo</td><td>InputFile or String</td><td>Yes</td><td>The photo.</td></tr>
+<tr><td>caption</td><td>String</td><td>Optional</td><td>Caption.</td></tr></tbody></table>
+<h4>editMessageText</h4><p>On success, the Message is returned, otherwise True is returned.</p>
+<table><thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+<tr><td>text</td><td>String</td><td>Yes</td><td>Text.</td></tr></tbody></table>
+<h4>getUpdates</h4><p>Returns an Array of Message objects.</p>
+<table><thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+<tr><td>offset</td><td>Integer</td><td>Optional</td><td>Offset.</td></tr></tbody></table>
+<h4>close</h4><p>Requires no parameters. Returns True on success.</p>
+</body></html>
